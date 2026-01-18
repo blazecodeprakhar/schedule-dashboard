@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Timetable - Prakhar Yadav</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="student-info">
+                    <h1 class="student-name">Prakhar Yadav</h1>
+                    <p class="student-details">ERP: 1000024015 | BTech CSE - AI, ML & Robotics</p>
+                    <p class="semester-info">Semester: EVEN 2025-26 | Credits: 21</p>
+                </div>
+                <div class="notification-toggle">
+                    <button id="enableNotifications" class="btn-notification">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        Enable Notifications
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Current Class Section -->
+    <section class="current-class-section">
+        <div class="container">
+            <div class="current-class-card" id="currentClassCard">
+                <div class="status-badge" id="statusBadge">
+                    <span class="pulse"></span>
+                    <span id="statusText">No Class</span>
+                </div>
+                <div class="class-info" id="currentClassInfo">
+                    <h2 class="class-title" id="currentClassName">No ongoing class</h2>
+                    <div class="class-details">
+                        <span class="class-time" id="currentClassTime">-</span>
+                        <span class="class-location" id="currentClassLocation">-</span>
+                    </div>
+                    <div class="class-instructor" id="currentClassInstructor">-</div>
+                </div>
+                <div class="timer-section" id="timerSection">
+                    <div class="timer-label">Time Remaining</div>
+                    <div class="timer" id="timer">--:--:--</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Class Preview -->
+            <div class="next-class-preview" id="nextClassPreview">
+                <div class="next-label">Up Next</div>
+                <div class="next-class-info">
+                    <span class="next-class-name" id="nextClassName">-</span>
+                    <span class="next-class-time" id="nextClassTime">-</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Timetable -->
+    <section class="timetable-section">
+        <div class="container">
+            <h2 class="section-title">Weekly Schedule</h2>
+            <div class="day-selector" id="daySelector">
+                <button class="day-btn" data-day="monday">Mon</button>
+                <button class="day-btn" data-day="tuesday">Tue</button>
+                <button class="day-btn" data-day="wednesday">Wed</button>
+                <button class="day-btn" data-day="thursday">Thu</button>
+                <button class="day-btn" data-day="friday">Fri</button>
+                <button class="day-btn" data-day="all">All</button>
+            </div>
+            <div class="timetable-grid" id="timetableGrid">
+                <!-- Timetable will be generated here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
