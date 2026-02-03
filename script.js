@@ -225,6 +225,13 @@ let timerInterval = null;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker Registered'))
+            .catch(err => console.log('Service Worker Failed', err));
+    }
+
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
     initializeDaySelector(today);
