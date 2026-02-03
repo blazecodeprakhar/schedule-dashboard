@@ -225,8 +225,20 @@ let timerInterval = null;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    initializeDaySelector();
-    renderTimetable('all');
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+    initializeDaySelector(today);
+
+    // Check if today has classes, if so render today, else render 'all'
+    const hasClassesToday = timetable.some(d => d.day === today);
+    const initialView = hasClassesToday ? today : 'all';
+
+    if (initialView === 'all') {
+        document.querySelector('.day-btn[data-day="all"]').click(); // Visually update button state
+    } else {
+        renderTimetable(initialView);
+    }
+
     updateCurrentClass();
     setupNotificationButton();
 
@@ -238,9 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Initialize day selector
-function initializeDaySelector() {
+function initializeDaySelector(today) {
     const dayButtons = document.querySelectorAll('.day-btn');
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
     dayButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -249,13 +260,14 @@ function initializeDaySelector() {
             renderTimetable(btn.dataset.day);
         });
 
-        // Set today as active by default
+        // Set today as active by default if it exists in buttons
         if (btn.dataset.day === today) {
             btn.classList.add('active');
         }
     });
 
-    // If no day is active, activate 'all'
+    // If today is Sunday or Saturday (not in list usually), or just no match, 'all' might be needed
+    // But we handle the rendering logic in DOMContentLoaded
     if (!document.querySelector('.day-btn.active')) {
         document.querySelector('[data-day="all"]').classList.add('active');
     }
@@ -272,8 +284,13 @@ function renderTimetable(selectedDay) {
 
     daysToShow.forEach(dayData => {
         const dayGroup = document.createElement('div');
+        // If viewing single day, don't need the 'day-group' box styling necessarily, 
+        // but keeping it for consistency is fine. We can simplify if it's just one day.
         dayGroup.className = 'day-group';
 
+        // Only show header if we are viewing "All" days, otherwise it's redundant with the button?
+        // Actually, user might want to know which day it is if they click "Mon". 
+        // Let's keep it but maybe style it differently?
         const dayHeader = document.createElement('div');
         dayHeader.className = 'day-header';
         dayHeader.textContent = capitalizeFirst(dayData.day);
@@ -290,12 +307,15 @@ function renderTimetable(selectedDay) {
         dayGroup.appendChild(classList);
         grid.appendChild(dayGroup);
     });
+
+    // Immediately update statuses for the newly rendered cards
+    updateClassCardStatuses();
 }
 
 // Create class card
 function createClassCard(classData, day) {
     const card = document.createElement('div');
-    card.className = 'class-card';
+    card.className = 'class-card'; // Base class
     card.dataset.day = day;
     card.dataset.time = classData.time;
 
@@ -330,58 +350,113 @@ function createClassCard(classData, day) {
                 ${classData.instructor}
             </div>
         </div>
+        <div class="class-status-badge"></div> <!-- For Completed/Now/Up Next text -->
     `;
 
     return card;
 }
 
 // Update current class
+// Update current class
 function updateCurrentClass() {
     const now = new Date();
     const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
-    // Find today's schedule
+    // Global dashboard updates logic...
     const todaySchedule = timetable.find(d => d.day === currentDay);
 
     if (!todaySchedule) {
-        displayNoClass();
-        return;
-    }
-
-    // Find current and next class
-    let foundCurrent = null;
-    let foundNext = null;
-
-    for (let i = 0; i < todaySchedule.classes.length; i++) {
-        const classData = todaySchedule.classes[i];
-        const [startTime, endTime] = parseTimeRange(classData.time);
-
-        if (currentTime >= startTime && currentTime <= endTime) {
-            foundCurrent = classData;
-            foundNext = todaySchedule.classes[i + 1] || null;
-            break;
-        } else if (currentTime < startTime) {
-            foundNext = classData;
-            break;
+        if (typeof displayNoScheduleToday === 'function') {
+            displayNoScheduleToday();
+        } else {
+            displayNoClass(); // Fallback
         }
-    }
-
-    if (foundCurrent) {
-        displayCurrentClass(foundCurrent, foundNext);
-        highlightCurrentClass(currentDay, foundCurrent.time);
-    } else if (foundNext) {
-        displayUpcomingClass(foundNext);
-        highlightCurrentClass(currentDay, null);
     } else {
-        displayNoClass();
-        highlightCurrentClass(currentDay, null);
+        // Find current and next class
+        let foundCurrent = null;
+        let foundNext = null;
+
+        for (let i = 0; i < todaySchedule.classes.length; i++) {
+            const classData = todaySchedule.classes[i];
+            const [startTime, endTime] = parseTimeRange(classData.time);
+
+            if (currentTime >= startTime && currentTime <= endTime) {
+                foundCurrent = classData;
+                foundNext = todaySchedule.classes[i + 1] || null;
+                break;
+            } else if (currentTime < startTime) {
+                foundNext = classData;
+                break;
+            }
+        }
+
+        if (foundCurrent) {
+            displayCurrentClass(foundCurrent, foundNext);
+        } else if (foundNext) {
+            displayUpcomingClass(foundNext);
+        } else {
+            if (typeof displayEndOfDay === 'function') {
+                displayEndOfDay();
+            } else {
+                displayNoClass(); // Fallback
+            }
+        }
+
+        currentClass = foundCurrent;
+        nextClass = foundNext;
     }
 
-    currentClass = foundCurrent;
-    nextClass = foundNext;
+    // Refresh the statuses of the cards in the grid
+    updateClassCardStatuses();
 }
 
+// New Function: Update statuses for cards in the grid
+function updateClassCardStatuses() {
+    const now = new Date();
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+
+    document.querySelectorAll('.class-card').forEach(card => {
+        const cardDay = card.dataset.day;
+        const timeRange = card.dataset.time;
+        const [startTime, endTime] = parseTimeRange(timeRange);
+
+        // Remove existing status classes
+        card.classList.remove('completed', 'current', 'upcoming');
+        const badge = card.querySelector('.class-status-badge');
+        if (badge) badge.textContent = '';
+
+        if (cardDay !== currentDay) {
+            // Not today -> neutral/upcoming style
+            return;
+        }
+
+        // It is today!
+        if (currentTime > endTime) {
+            card.classList.add('completed');
+            if (badge) badge.textContent = 'Completed';
+        } else if (currentTime >= startTime && currentTime <= endTime) {
+            card.classList.add('current');
+            if (badge) badge.textContent = 'Happening Now';
+        } else {
+            // If it hasn't started yet
+            card.classList.add('upcoming');
+
+            // Calculate time until start
+            const minutesUntil = startTime - currentTime;
+            if (minutesUntil > 0 && minutesUntil <= 60) {
+                if (badge) badge.textContent = `In ${minutesUntil}m`;
+            } else {
+                if (badge) badge.textContent = 'Upcoming';
+            }
+        }
+    });
+}
+
+
+
+// Parse time range
 // Display current class
 function displayCurrentClass(classData, nextClassData) {
     const card = document.getElementById('currentClassCard');
@@ -398,7 +473,8 @@ function displayCurrentClass(classData, nextClassData) {
     statusText.textContent = 'In Progress';
 
     className.textContent = classData.name;
-    classTime.textContent = classData.time;
+    // Show time clearly with a clock icon styled in CSS or text
+    classTime.innerHTML = `${classData.time}`;
     classLocation.textContent = classData.location;
     classInstructor.textContent = `${classData.instructor} • ${classData.type}`;
 
@@ -428,10 +504,11 @@ function displayUpcomingClass(classData) {
 
     card.classList.remove('active');
     statusBadge.classList.remove('active');
-    statusText.textContent = 'Upcoming';
+    statusText.textContent = 'Up Next';
 
     className.textContent = classData.name;
-    classTime.textContent = classData.time;
+    const [startTimeStr] = classData.time.split('-');
+    classTime.textContent = `Starts at ${startTimeStr}`;
     classLocation.textContent = classData.location;
     classInstructor.textContent = `${classData.instructor} • ${classData.type}`;
 
@@ -441,8 +518,8 @@ function displayUpcomingClass(classData) {
     document.getElementById('nextClassPreview').style.display = 'none';
 }
 
-// Display no class
-function displayNoClass() {
+// Display End of Day (Classes Over)
+function displayEndOfDay() {
     const card = document.getElementById('currentClassCard');
     const statusBadge = document.getElementById('statusBadge');
     const statusText = document.getElementById('statusText');
@@ -454,102 +531,46 @@ function displayNoClass() {
 
     card.classList.remove('active');
     statusBadge.classList.remove('active');
-    statusText.textContent = 'No Class';
+    statusText.textContent = 'Completed';
 
-    className.textContent = 'No ongoing class';
-    classTime.textContent = 'Enjoy your free time! 🎉';
+    className.textContent = 'All Classes Completed';
+    classTime.textContent = 'Enjoy your rest of the day! 🎉';
     classLocation.textContent = '-';
     classInstructor.textContent = '-';
 
-    timerSection.style.display = 'none';
-    document.getElementById('nextClassPreview').style.display = 'none';
+    if (timerSection) timerSection.style.display = 'none';
+    const nextPreview = document.getElementById('nextClassPreview');
+    if (nextPreview) nextPreview.style.display = 'none';
 }
 
-// Update timer
-function updateTimer(timeRange) {
-    const now = new Date();
-    const [, endTime] = parseTimeRange(timeRange);
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const remainingMinutes = endTime - currentTime;
+// Display No Schedule Today (Weekend/Holiday)
+function displayNoScheduleToday() {
+    const card = document.getElementById('currentClassCard');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusText = document.getElementById('statusText');
+    const className = document.getElementById('currentClassName');
+    const classTime = document.getElementById('currentClassTime');
+    const classLocation = document.getElementById('currentClassLocation');
+    const classInstructor = document.getElementById('currentClassInstructor');
+    const timerSection = document.getElementById('timerSection');
 
-    // Reset timer label to "Time Remaining" for current class
-    const timerLabel = document.querySelector('.timer-label');
-    if (timerLabel) {
-        timerLabel.textContent = 'Time Remaining';
-    }
+    card.classList.remove('active');
+    statusBadge.classList.remove('active');
+    statusText.textContent = 'Rest Day';
 
-    if (remainingMinutes <= 0) {
-        const timerEl = document.getElementById('timer');
-        const progressEl = document.getElementById('progressFill');
-        if (timerEl) timerEl.textContent = '00:00:00';
-        if (progressEl) progressEl.style.width = '0%';
-        return;
-    }
+    className.textContent = 'No Classes Today';
+    classTime.textContent = 'Enjoy your day! 😴';
+    classLocation.textContent = '-';
+    classInstructor.textContent = '-';
 
-    const hours = Math.floor(remainingMinutes / 60);
-    const minutes = remainingMinutes % 60;
-    const seconds = 60 - now.getSeconds();
-
-    const timerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    const timerEl = document.getElementById('timer');
-    if (timerEl) {
-        timerEl.textContent = timerText;
-    }
-
-    // Update progress bar
-    const [startTime] = parseTimeRange(timeRange);
-    const totalDuration = endTime - startTime;
-    const elapsed = currentTime - startTime;
-    const progress = (elapsed / totalDuration) * 100;
-    const progressEl = document.getElementById('progressFill');
-    if (progressEl) {
-        progressEl.style.width = `${Math.min(progress, 100)}%`;
-    }
+    if (timerSection) timerSection.style.display = 'none';
+    const nextPreview = document.getElementById('nextClassPreview');
+    if (nextPreview) nextPreview.style.display = 'none';
 }
 
-// Update timer for upcoming class
-function updateTimerForUpcoming(timeRange) {
-    const now = new Date();
-    const [startTime] = parseTimeRange(timeRange);
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const remainingMinutes = startTime - currentTime;
-
-    if (remainingMinutes <= 0) {
-        return;
-    }
-
-    const hours = Math.floor(remainingMinutes / 60);
-    const minutes = remainingMinutes % 60;
-    const seconds = 60 - now.getSeconds();
-
-    const timerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    const timerEl = document.getElementById('timer');
-    const timerLabel = document.querySelector('.timer-label');
-    const progressEl = document.getElementById('progressFill');
-
-    if (timerEl) {
-        timerEl.textContent = timerText;
-    }
-    if (timerLabel) {
-        timerLabel.textContent = 'Starts In';
-    }
-    if (progressEl) {
-        progressEl.style.width = '0%';
-    }
-}
-
-// Highlight current class in timetable
-function highlightCurrentClass(day, timeRange) {
-    document.querySelectorAll('.class-card').forEach(card => {
-        card.classList.remove('current');
-    });
-
-    if (timeRange) {
-        const currentCard = document.querySelector(`.class-card[data-day="${day}"][data-time="${timeRange}"]`);
-        if (currentCard) {
-            currentCard.classList.add('current');
-        }
-    }
+// Display no class (Generic fallback)
+function displayNoClass() {
+    displayNoScheduleToday();
 }
 
 // Parse time range
@@ -559,6 +580,8 @@ function parseTimeRange(timeRange) {
     const [endHour, endMin] = end.split(':').map(Number);
     return [startHour * 60 + startMin, endHour * 60 + endMin];
 }
+
+
 
 // Setup notification button
 function setupNotificationButton() {
@@ -605,7 +628,7 @@ function updateNotificationButton() {
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            Notifications On
+            <span>Notifications On</span>
         `;
     } else {
         btn.classList.remove('enabled');
@@ -614,10 +637,14 @@ function updateNotificationButton() {
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            Enable Notifications
+            <span>Enable Notifications</span>
         `;
     }
 }
+
+
+// Notification State
+let lastNotified = { code: null, type: null };
 
 // Check for upcoming class
 function checkUpcomingClass() {
@@ -628,22 +655,33 @@ function checkUpcomingClass() {
     const [startTime] = parseTimeRange(nextClass.time);
     const minutesUntil = startTime - currentTime;
 
-    // Notify 10 minutes before class
-    if (minutesUntil === 10) {
-        new Notification(`Class Starting Soon! 🔔`, {
-            body: `${nextClass.name} starts in 10 minutes at ${nextClass.location}`,
-            icon: '📚',
-            requireInteraction: true
-        });
+    // Reset state if class changed
+    if (lastNotified.code !== nextClass.code) {
+        lastNotified = { code: nextClass.code, type: null };
     }
 
-    // Notify 5 minutes before class
-    if (minutesUntil === 5) {
-        new Notification(`Class Starting in 5 Minutes! ⏰`, {
-            body: `${nextClass.name} at ${nextClass.location}`,
-            icon: '📚',
+    // Notify 10 minutes before class (Window: 9-11 mins to be safe)
+    if (minutesUntil <= 10 && minutesUntil > 5 && lastNotified.type !== '10m') {
+        new Notification(`Class Starting Soon! 🔔`, {
+            body: `${nextClass.name} starts in ${minutesUntil} minutes at ${nextClass.location}`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png', // Generic book icon
+            vibrate: [200, 100, 200],
+            tag: 'class-reminder-10',
             requireInteraction: true
         });
+        lastNotified.type = '10m';
+    }
+
+    // Notify 5 minutes before class (Window: 1-5 mins)
+    if (minutesUntil <= 5 && minutesUntil > 0 && lastNotified.type !== '5m') {
+        new Notification(`Hurry Up! Class in 5m ⏰`, {
+            body: `Head to ${nextClass.location} for ${nextClass.code}`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png',
+            vibrate: [500, 200, 500],
+            tag: 'class-reminder-5',
+            requireInteraction: true
+        });
+        lastNotified.type = '5m';
     }
 }
 
@@ -651,3 +689,95 @@ function checkUpcomingClass() {
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// Update timer
+function updateTimer(timeRange) {
+    const now = new Date();
+    // parseTimeRange returns [startMins, endMins]
+    const [startMins, endMins] = parseTimeRange(timeRange);
+
+    // Create Date objects for today
+    const endDate = new Date();
+    endDate.setHours(Math.floor(endMins / 60), endMins % 60, 0, 0);
+
+    const diff = endDate - now;
+
+    if (diff <= 0) {
+        const timerEl = document.getElementById('timer');
+        const progressEl = document.getElementById('progressFill');
+        if (timerEl) timerEl.textContent = '00:00:00';
+        if (progressEl) progressEl.style.width = '100%';
+        return;
+    }
+
+    const hours = Math.floor(diff / 1000 / 60 / 60);
+    const minutes = Math.floor((diff / 1000 / 60) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    const timerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const timerEl = document.getElementById('timer');
+    if (timerEl) {
+        timerEl.textContent = timerText;
+        timerEl.style.display = 'block';
+    }
+
+    // Update progress bar
+    const startDate = new Date();
+    startDate.setHours(Math.floor(startMins / 60), startMins % 60, 0, 0);
+
+    const totalDuration = endDate - startDate;
+    const elapsed = now - startDate;
+    const progress = (elapsed / totalDuration) * 100;
+
+    const progressEl = document.getElementById('progressFill');
+    if (progressEl) {
+        progressEl.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+    }
+}
+
+// Update timer for upcoming class
+function updateTimerForUpcoming(timeRange) {
+    const now = new Date();
+    const [startMins] = parseTimeRange(timeRange);
+
+    const startDate = new Date();
+    startDate.setHours(Math.floor(startMins / 60), startMins % 60, 0, 0);
+
+    const diff = startDate - now;
+
+    if (diff <= 0) {
+        return;
+    }
+
+    const hours = Math.floor(diff / 1000 / 60 / 60);
+    const minutes = Math.floor((diff / 1000 / 60) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    const timerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const timerEl = document.getElementById('timer');
+    const timerLabel = document.querySelector('.timer-label');
+    const progressEl = document.getElementById('progressFill');
+
+    if (timerEl) {
+        timerEl.textContent = timerText;
+        timerEl.style.display = 'block';
+    }
+    if (timerLabel) {
+        timerLabel.textContent = 'Starts In';
+    }
+    if (progressEl) {
+        // Logic: Bar fills up as we approach the start time.
+        // Waiting Window: 2 hours (120 mins).
+        // If > 2 hours, bar is 0%.
+        // If 0 mins, bar is 100%.
+        const totalWindow = 2 * 60 * 60 * 1000; // 2 hours
+        let percentage = 0;
+
+        if (diff < totalWindow) {
+            percentage = ((totalWindow - diff) / totalWindow) * 100;
+        }
+
+        progressEl.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
+    }
+}
+
