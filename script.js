@@ -218,7 +218,7 @@ const timetable = [
 ];
 
 // Global state
-let notificationsEnabled = false;
+
 let currentClass = null;
 let nextClass = null;
 let timerInterval = null;
@@ -247,13 +247,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateCurrentClass();
-    setupNotificationButton();
+
 
     // Update every second
     setInterval(updateCurrentClass, 1000);
 
-    // Check for notifications every minute
-    setInterval(checkUpcomingClass, 60000);
+
 });
 
 // Initialize day selector
@@ -590,107 +589,7 @@ function parseTimeRange(timeRange) {
 
 
 
-// Setup notification button
-function setupNotificationButton() {
-    const btn = document.getElementById('enableNotifications');
 
-    btn.addEventListener('click', async () => {
-        if (!('Notification' in window)) {
-            alert('This browser does not support notifications');
-            return;
-        }
-
-        if (Notification.permission === 'granted') {
-            notificationsEnabled = !notificationsEnabled;
-            updateNotificationButton();
-            if (notificationsEnabled) {
-                new Notification('Notifications Enabled', {
-                    body: 'You will receive notifications for upcoming classes',
-                    icon: '📚'
-                });
-            }
-        } else if (Notification.permission !== 'denied') {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                notificationsEnabled = true;
-                updateNotificationButton();
-                new Notification('Notifications Enabled', {
-                    body: 'You will receive notifications for upcoming classes',
-                    icon: '📚'
-                });
-            }
-        }
-    });
-
-    updateNotificationButton();
-}
-
-// Update notification button
-function updateNotificationButton() {
-    const btn = document.getElementById('enableNotifications');
-    if (notificationsEnabled) {
-        btn.classList.add('enabled');
-        btn.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <span>Notifications On</span>
-        `;
-    } else {
-        btn.classList.remove('enabled');
-        btn.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <span>Enable Notifications</span>
-        `;
-    }
-}
-
-
-// Notification State
-let lastNotified = { code: null, type: null };
-
-// Check for upcoming class
-function checkUpcomingClass() {
-    if (!notificationsEnabled || !nextClass) return;
-
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const [startTime] = parseTimeRange(nextClass.time);
-    const minutesUntil = startTime - currentTime;
-
-    // Reset state if class changed
-    if (lastNotified.code !== nextClass.code) {
-        lastNotified = { code: nextClass.code, type: null };
-    }
-
-    // Notify 10 minutes before class (Window: 9-11 mins to be safe)
-    if (minutesUntil <= 10 && minutesUntil > 5 && lastNotified.type !== '10m') {
-        new Notification(`Class Starting Soon! 🔔`, {
-            body: `${nextClass.name} starts in ${minutesUntil} minutes at ${nextClass.location}`,
-            icon: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png', // Generic book icon
-            vibrate: [200, 100, 200],
-            tag: 'class-reminder-10',
-            requireInteraction: true
-        });
-        lastNotified.type = '10m';
-    }
-
-    // Notify 5 minutes before class (Window: 1-5 mins)
-    if (minutesUntil <= 5 && minutesUntil > 0 && lastNotified.type !== '5m') {
-        new Notification(`Hurry Up! Class in 5m ⏰`, {
-            body: `Head to ${nextClass.location} for ${nextClass.code}`,
-            icon: 'https://cdn-icons-png.flaticon.com/512/2645/2645897.png',
-            vibrate: [500, 200, 500],
-            tag: 'class-reminder-5',
-            requireInteraction: true
-        });
-        lastNotified.type = '5m';
-    }
-}
 
 // Utility function
 function capitalizeFirst(str) {
