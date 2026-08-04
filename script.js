@@ -374,11 +374,14 @@ function createClassCard(classData, day) {
 
     card.innerHTML = `
         <div class="class-card-header">
-            <div>
+            <div class="class-title-area">
                 <div class="class-code">${classData.code}</div>
                 <div class="class-name">${classData.name}</div>
             </div>
-            <div class="class-type">${classData.type}</div>
+            <div class="class-badge-area">
+                <div class="class-type">${classData.type}</div>
+                <div class="class-status-badge"></div>
+            </div>
         </div>
         <div class="class-card-body">
             <div class="class-meta">
@@ -403,7 +406,6 @@ function createClassCard(classData, day) {
                 ${classData.instructor}
             </div>
         </div>
-        <div class="class-status-badge"></div> <!-- For Completed/Now/Up Next text -->
     `;
 
     return card;
@@ -940,6 +942,10 @@ function startLockscreenCountdown(classData, startMins, classKey) {
 }
 
 function showAppNotification(title, options) {
+    if (options && options.silent) {
+        delete options.vibrate;
+    }
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(reg => {
             reg.showNotification(title, options);
