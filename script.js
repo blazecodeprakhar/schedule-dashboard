@@ -275,8 +275,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker Registered'))
+            .then(reg => {
+                console.log('Service Worker Registered');
+                
+                // Trigger page refresh if update is found and installed
+                reg.onupdatefound = () => {
+                    const installingWorker = reg.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                console.log('New update available. Reloading page...');
+                                window.location.reload();
+                            }
+                        }
+                    };
+                };
+            })
             .catch(err => console.log('Service Worker Failed', err));
+            
+        // Reload page when new service worker claims control
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
     }
 
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
