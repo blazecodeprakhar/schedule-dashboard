@@ -24,8 +24,8 @@
             <div class="header-content">
                 <div class="student-info">
                     <h1 class="student-name">Prakhar Yadav</h1>
-                    <p class="student-details">ERP: 1000024015 | BTech CSE - AI, ML & Robotics</p>
-                    <p class="semester-info">Semester: EVEN 2025-26 | Credits: 21</p>
+                    <p class="student-details">ERP: 1000024015 | BTech CSE - Cybersecurity and Privacy</p>
+                    <p class="semester-info">Semester: ODD 2026-27 | Credits: 23</p>
                 </div>
 
             </div>
@@ -35,43 +35,99 @@
     <!-- Current Class Section -->
     <section class="current-class-section">
         <div class="container">
-            <div class="current-class-card" id="currentClassCard">
-                <div class="status-badge" id="statusBadge">
-                    <span class="pulse"></span>
-                    <span id="statusText">No Class</span>
-                </div>
-                <div class="class-info" id="currentClassInfo">
-                    <h2 class="class-title" id="currentClassName">No ongoing class</h2>
-                    <div class="class-details">
-                        <span class="class-time" id="currentClassTime">
-                            -
-                        </span>
-                        <span class="class-location" id="currentClassLocation">
-                            -
-                        </span>
-                        <span class="class-instructor" id="currentClassInstructor">
-                            -
-                        </span>
+            <div class="current-class-grid">
+                <!-- Dashboard Column -->
+                <div class="dashboard-column">
+                    <div class="current-class-card" id="currentClassCard">
+                        <div class="status-badge" id="statusBadge">
+                            <span class="pulse"></span>
+                            <span id="statusText">No Class</span>
+                        </div>
+                        <div class="class-info" id="currentClassInfo">
+                            <h2 class="class-title" id="currentClassName">No ongoing class</h2>
+                            <div class="class-details">
+                                <span class="class-time" id="currentClassTime">
+                                    -
+                                </span>
+                                <span class="class-location" id="currentClassLocation">
+                                    -
+                                </span>
+                                <span class="class-instructor" id="currentClassInstructor">
+                                    -
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timer-section" id="timerSection">
+                            <div class="timer-label">Time Remaining</div>
+                            <div class="timer" id="timer">--:--:--</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="timer-section" id="timerSection">
-                    <div class="timer-label">Time Remaining</div>
-                    <div class="timer" id="timer">--:--:--</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Next Class Preview -->
-            <div class="next-class-preview" id="nextClassPreview">
-                <div class="next-label">Up Next</div>
-                <div class="next-class-info">
-                    <span class="next-class-name" id="nextClassName">-</span>
-                    <span class="next-class-time" id="nextClassTime">-</span>
+                    <!-- Next Class Preview -->
+                    <div class="next-class-preview" id="nextClassPreview">
+                        <div class="next-label">Up Next</div>
+                        <div class="next-class-info">
+                            <span class="next-class-name" id="nextClassName">-</span>
+                            <span class="next-class-time" id="nextClassTime">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Column -->
+                <div class="settings-column">
+                    <div class="notification-card" id="notificationCard">
+                        <div class="notification-card-header">
+                            <h3 class="notification-title">Class Alerts</h3>
+                            <div class="notification-status-badge" id="notificationStatusBadge">
+                                <span class="pulse"></span>
+                                <span id="notificationStatusText">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="notification-card-body">
+                            <p class="notification-description">
+                                Receive notifications before classes begin, including live countdown timers. Ensure your browser is allowed to send notifications.
+                            </p>
+                            <div class="notification-controls">
+                                <button class="action-btn" id="enableNotificationsBtn">Enable Notifications</button>
+                                
+                                <div class="settings-group" id="notificationSettingsGroup" style="display: none;">
+                                    <label class="settings-label" for="notificationOffset">Notify Me Before</label>
+                                    <div class="offset-selector">
+                                        <select id="notificationOffset" class="custom-select">
+                                            <option value="1">1 Minute</option>
+                                            <option value="3">3 Minutes</option>
+                                            <option value="5" selected>5 Minutes</option>
+                                            <option value="10">10 Minutes</option>
+                                            <option value="15">15 Minutes</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="checkbox-setting">
+                                        <input type="checkbox" id="notificationSound" checked>
+                                        <label for="notificationSound">Vibrate / Sound on Alert</label>
+                                    </div>
+                                    
+                                    <div class="checkbox-setting">
+                                        <input type="checkbox" id="notificationCountdown" checked>
+                                        <label for="notificationCountdown">Lockscreen Live Countdown</label>
+                                    </div>
+
+                                    <button class="test-btn" id="testNotificationBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                        </svg>
+                                        Send Test Alert (5s)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </section>
 
     <!-- Weekly Timetable -->

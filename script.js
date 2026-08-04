@@ -4,44 +4,44 @@ const timetable = [
         day: 'monday',
         classes: [
             {
-                code: 'CSN206',
-                name: 'Design and Analysis of Algorithms',
+                code: 'CSN355',
+                name: 'Cyber Crime & Investigation',
+                type: 'Lecture-1',
+                time: '09:00-09:50',
+                location: 'Block - VISVESVARAYA VERA5F 503 Lecture Hall 3',
+                instructor: 'No Faculty',
+                bucket: 'Discipline Elective',
+                credits: 3
+            },
+            {
+                code: 'CSN304',
+                name: 'Artificial Intelligence',
                 type: 'Lecture-1',
                 time: '10:00-10:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Shreya Deoli',
+                location: 'Block - VISVESVARAYA VERA5F 503 Lecture Hall 3',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'CSN205',
-                name: 'Database Management Systems',
-                type: 'Lecture-1',
-                time: '11:00-11:50',
-                location: 'VED4F 427 LH5',
-                instructor: 'Anuj Kumar Yadav',
-                bucket: 'Discipline Core',
-                credits: 4
+                code: 'CSN352',
+                name: 'Number Theory and Cryptology',
+                type: 'Practical-1',
+                time: '11:00-12:50',
+                location: 'Block - VEDANTA VED4F 423 Computer Lab 1',
+                instructor: 'Kapil Dev Sharma',
+                bucket: 'Discipline Elective',
+                credits: 3
             },
             {
-                code: 'CSN204',
-                name: 'Operating Systems',
-                type: 'Lecture-1',
-                time: '13:00-13:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Riya Dhama',
-                bucket: 'Discipline Core',
-                credits: 4
-            },
-            {
-                code: 'MAN202',
-                name: 'Probability and Statistics',
-                type: 'Lecture-1',
+                code: 'PSYN386',
+                name: 'Health Psychology',
+                type: 'Studio-1',
                 time: '14:00-14:50',
-                location: 'VEDSF 226 LH 04',
-                instructor: 'Sandeep Sharma',
-                bucket: 'Core Maths',
-                credits: 4
+                location: 'Block - VISVESVARAYA VERA4F 408 Lecture Hall 8',
+                instructor: 'Mony Singh',
+                bucket: 'Free Elective',
+                credits: 3
             }
         ]
     },
@@ -49,44 +49,54 @@ const timetable = [
         day: 'tuesday',
         classes: [
             {
-                code: 'MAN202',
-                name: 'Probability and Statistics',
-                type: 'Lecture-2',
+                code: 'CSN302',
+                name: 'Advanced Java Programming',
+                type: 'Lecture-1',
                 time: '09:00-09:50',
-                location: 'VEDSF 226 LH 04',
-                instructor: 'Sandeep Sharma',
-                bucket: 'Core Maths',
-                credits: 4
-            },
-            {
-                code: 'CSN205',
-                name: 'Database Management Systems',
-                type: 'Lecture-2',
-                time: '13:00-13:50',
-                location: 'VEDSF 226 LH 04',
-                instructor: 'Anuj Kumar Yadav',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'CSN206',
-                name: 'Design and Analysis of Algorithms',
+                code: 'CSN304',
+                name: 'Artificial Intelligence',
                 type: 'Lecture-2',
+                time: '10:00-10:50',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Neha Singh',
+                bucket: 'Discipline Core',
+                credits: 4
+            },
+            {
+                code: 'CSN302',
+                name: 'Advanced Java Programming',
+                type: 'Practical-1',
+                time: '11:00-12:50',
+                location: 'Block - VEDANTA VED4F 424 Computer Lab 2',
+                instructor: 'Kirti Gupta',
+                bucket: 'Discipline Core',
+                credits: 4
+            },
+            {
+                code: 'PSYN386',
+                name: 'Health Psychology',
+                type: 'Studio-1',
                 time: '14:00-14:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Shreya Deoli',
-                bucket: 'Discipline Core',
-                credits: 4
+                location: 'Block - VISVESVARAYA VERA4F 408 Lecture Hall 8',
+                instructor: 'Mony Singh',
+                bucket: 'Free Elective',
+                credits: 3
             },
             {
-                code: 'CSN204',
-                name: 'Operating Systems',
-                type: 'Lecture-2',
-                time: '15:00-15:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Riya Dhama',
-                bucket: 'Discipline Core',
-                credits: 4
+                code: 'CSN355',
+                name: 'Cyber Crime & Investigation',
+                type: 'Practical-1',
+                time: '15:00-16:50',
+                location: 'Block - VEDANTA VED5F 512 Computer Lab 7',
+                instructor: 'No Faculty',
+                bucket: 'Discipline Elective',
+                credits: 3
             }
         ]
     },
@@ -94,44 +104,44 @@ const timetable = [
         day: 'wednesday',
         classes: [
             {
-                code: 'CSN205',
-                name: 'Database Management Systems',
-                type: 'Lecture-3',
-                time: '10:00-10:50',
-                location: 'VEDSF 227 LH 05',
-                instructor: 'Anuj Kumar Yadav',
+                code: 'CSN303',
+                name: 'Computer Networks',
+                type: 'Practical-1',
+                time: '09:00-10:50',
+                location: 'Block - VEDANTA VED4F 425 Computer Lab 3',
+                instructor: 'Vasu Bhatia',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'CSN206',
-                name: 'Design and Analysis of Algorithms',
-                type: 'Lecture-3',
-                time: '11:00-11:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Shreya Deoli',
-                bucket: 'Discipline Core',
-                credits: 4
-            },
-            {
-                code: 'CSN204',
-                name: 'Operating Systems',
-                type: 'Practical-2',
-                time: '13:00-14:50',
-                location: 'VED5F 505-5 Computer Lab 5',
-                instructor: 'Riya Dhama',
-                bucket: 'Discipline Core',
-                credits: 4
-            },
-            {
-                code: 'PSYN286',
-                name: 'Stress Management',
+                code: 'CSN352',
+                name: 'Number Theory and Cryptology',
                 type: 'Lecture-1',
-                time: '16:00-16:50',
-                location: 'VED4F 405 LH7',
-                instructor: 'Anju Dangwal',
-                bucket: 'Humanities Electives',
+                time: '11:00-11:50',
+                location: 'Block - VEDANTA VEDSF 202 LH 1 Room',
+                instructor: 'Kapil Dev Sharma',
+                bucket: 'Discipline Elective',
                 credits: 3
+            },
+            {
+                code: 'CDC201',
+                name: 'Aptitude and Soft Skills',
+                type: 'Lecture-1',
+                time: '12:00-12:50',
+                location: 'Block - VEDANTA VEDSF 202 LH 1 Room',
+                instructor: 'Parul Kalia',
+                bucket: 'Value Added',
+                credits: 2
+            },
+            {
+                code: 'CSN303',
+                name: 'Computer Networks',
+                type: 'Lecture-1',
+                time: '15:00-15:50',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Vasu Bhatia',
+                bucket: 'Discipline Core',
+                credits: 4
             }
         ]
     },
@@ -139,43 +149,63 @@ const timetable = [
         day: 'thursday',
         classes: [
             {
-                code: 'MAN202',
-                name: 'Probability and Statistics',
-                type: 'Lecture-3',
+                code: 'CSN302',
+                name: 'Advanced Java Programming',
+                type: 'Lecture-2',
                 time: '09:00-09:50',
-                location: 'VEDSF 226 LH 04',
-                instructor: 'Sandeep Sharma',
-                bucket: 'Core Maths',
-                credits: 4
-            },
-            {
-                code: 'CSN206',
-                name: 'Design and Analysis of Algorithms',
-                type: 'Practical-2',
-                time: '10:00-11:50',
-                location: 'VED5F 508 Computer Lab 4',
-                instructor: 'Shreya Deoli',
+                location: 'Block - VEDANTA VEDSF 226 LH 04 Room',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'CSN205',
-                name: 'Database Management Systems',
-                type: 'Practical-2',
-                time: '13:00-14:50',
-                location: 'VEDSF 223-A Computer Lab',
-                instructor: 'Anuj Kumar Yadav',
+                code: 'CSN355',
+                name: 'Cyber Crime & Investigation',
+                type: 'Lecture-2',
+                time: '10:00-10:50',
+                location: 'Block - VEDANTA VEDTF 303 LH 2 Room',
+                instructor: 'No Faculty',
+                bucket: 'Discipline Elective',
+                credits: 3
+            },
+            {
+                code: 'CSN304',
+                name: 'Artificial Intelligence',
+                type: 'Practical-1',
+                time: '11:00-12:50',
+                location: 'Block - VEDANTA VEDSF 226 LH 04 Room',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'PSYN286',
-                name: 'Stress Management',
+                code: 'PSYN386',
+                name: 'Health Psychology',
+                type: 'Studio-1',
+                time: '14:00-14:50',
+                location: 'Block - VISVESVARAYA VERA4F 408 Lecture Hall 8',
+                instructor: 'Mony Singh',
+                bucket: 'Free Elective',
+                credits: 3
+            },
+            {
+                code: 'CSN303',
+                name: 'Computer Networks',
+                type: 'Lecture-2',
+                time: '15:00-15:50',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Vasu Bhatia',
+                bucket: 'Discipline Core',
+                credits: 4
+            },
+            {
+                code: 'CSN352',
+                name: 'Number Theory and Cryptology',
                 type: 'Lecture-2',
                 time: '16:00-16:50',
-                location: 'VED4F 405 LH7',
-                instructor: 'Anju Dangwal',
-                bucket: 'Humanities Electives',
+                location: 'Block - VEDANTA VED4F 427 LH5',
+                instructor: 'Kapil Dev Sharma',
+                bucket: 'Discipline Elective',
                 credits: 3
             }
         ]
@@ -184,44 +214,61 @@ const timetable = [
         day: 'friday',
         classes: [
             {
-                code: 'MAN202',
-                name: 'Probability and Statistics',
-                type: 'Lecture-4',
-                time: '10:00-10:50',
-                location: 'VEDSF 226 LH 04',
-                instructor: 'Sandeep Sharma',
-                bucket: 'Core Maths',
-                credits: 4
+                code: 'CDC201',
+                name: 'Aptitude and Soft Skills',
+                type: 'Lecture-2',
+                time: '09:00-09:50',
+                location: 'Block - VISVESVARAYA VERA4F 401 Lecture Hall 1',
+                instructor: 'Parul Kalia',
+                bucket: 'Value Added',
+                credits: 2
             },
             {
-                code: 'CSN204',
-                name: 'Operating Systems',
+                code: 'CSN302',
+                name: 'Advanced Java Programming',
                 type: 'Lecture-3',
-                time: '11:00-11:50',
-                location: 'VED4F 402 LH 1',
-                instructor: 'Riya Dhama',
+                time: '10:00-10:50',
+                location: 'Block - VISVESVARAYA VERA5F 502 Lecture Hall 2',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
             {
-                code: 'PSYN286',
-                name: 'Stress Management',
+                code: 'CSN304',
+                name: 'Artificial Intelligence',
                 type: 'Lecture-3',
-                time: '16:00-16:50',
-                location: 'VED4F 405 LH7',
-                instructor: 'Anju Dangwal',
-                bucket: 'Humanities Electives',
-                credits: 3
+                time: '11:00-11:50',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Neha Singh',
+                bucket: 'Discipline Core',
+                credits: 4
+            },
+            {
+                code: 'CSN303',
+                name: 'Computer Networks',
+                type: 'Lecture-3',
+                time: '12:00-12:50',
+                location: 'Block - VEDANTA VEDSF 203 LH 2 Room',
+                instructor: 'Vasu Bhatia',
+                bucket: 'Discipline Core',
+                credits: 4
             }
         ]
     }
 ];
 
 // Global state
-
 let currentClass = null;
 let nextClass = null;
 let timerInterval = null;
+
+// Notification States
+let notificationsEnabled = false;
+let notifyOffset = 5;
+let notifySound = true;
+let lockscreenCountdown = true;
+let alertedClasses = {};
+let activeNotifications = {};
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -248,11 +295,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateCurrentClass();
 
-
     // Update every second
     setInterval(updateCurrentClass, 1000);
 
-
+    // Initialize notifications system UI and state
+    initNotifications();
 });
 
 // Initialize day selector
@@ -412,6 +459,9 @@ function updateCurrentClass() {
         currentClass = foundCurrent;
         nextClass = foundNext;
     }
+
+    // Check and update class notifications
+    checkClassNotifications(currentDay, currentTime, now);
 
     // Refresh the statuses of the cards in the grid
     updateClassCardStatuses();
@@ -685,5 +735,270 @@ function updateTimerForUpcoming(timeRange) {
 
         progressEl.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
     }
+}
+
+// ==========================================
+// Class Notifications Features
+// ==========================================
+
+function initNotifications() {
+    const isSupported = 'Notification' in window && 'serviceWorker' in navigator;
+    const badge = document.getElementById('notificationStatusBadge');
+    const statusText = document.getElementById('notificationStatusText');
+    const enableBtn = document.getElementById('enableNotificationsBtn');
+    const settingsGroup = document.getElementById('notificationSettingsGroup');
+
+    if (!isSupported) {
+        if (badge) badge.className = 'notification-status-badge unsupported';
+        if (statusText) statusText.textContent = 'Unsupported';
+        if (enableBtn) {
+            enableBtn.textContent = 'Notifications Not Supported';
+            enableBtn.disabled = true;
+        }
+        return;
+    }
+
+    // Load saved settings
+    notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+    notifyOffset = parseInt(localStorage.getItem('notifyOffset') || '5', 10);
+    notifySound = localStorage.getItem('notifySound') !== 'false';
+    lockscreenCountdown = localStorage.getItem('lockscreenCountdown') !== 'false';
+
+    // Set UI elements based on saved settings
+    document.getElementById('notificationOffset').value = notifyOffset;
+    document.getElementById('notificationSound').checked = notifySound;
+    document.getElementById('notificationCountdown').checked = lockscreenCountdown;
+
+    // Check permission
+    if (Notification.permission === 'granted' && notificationsEnabled) {
+        updateNotificationsUI(true);
+    } else if (Notification.permission === 'denied') {
+        updateNotificationsUI(false, 'Blocked');
+    } else {
+        updateNotificationsUI(false);
+    }
+
+    // Event listeners
+    enableBtn.addEventListener('click', () => {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                notificationsEnabled = true;
+                localStorage.setItem('notificationsEnabled', 'true');
+                updateNotificationsUI(true);
+                showAppNotification('Alerts Activated!', {
+                    body: `You will get real-time class alerts ${notifyOffset}m before start time.`,
+                    icon: './favicon.svg',
+                    badge: './favicon.svg',
+                    tag: 'welcome-alert'
+                });
+            } else if (permission === 'denied') {
+                updateNotificationsUI(false, 'Blocked');
+            }
+        });
+    });
+
+    document.getElementById('notificationOffset').addEventListener('change', (e) => {
+        notifyOffset = parseInt(e.target.value, 10);
+        localStorage.setItem('notifyOffset', notifyOffset);
+    });
+
+    document.getElementById('notificationSound').addEventListener('change', (e) => {
+        notifySound = e.target.checked;
+        localStorage.setItem('notifySound', notifySound);
+    });
+
+    document.getElementById('notificationCountdown').addEventListener('change', (e) => {
+        lockscreenCountdown = e.target.checked;
+        localStorage.setItem('lockscreenCountdown', lockscreenCountdown);
+    });
+
+    document.getElementById('testNotificationBtn').addEventListener('click', runTestNotification);
+}
+
+function updateNotificationsUI(enabled, customStatus) {
+    const badge = document.getElementById('notificationStatusBadge');
+    const statusText = document.getElementById('notificationStatusText');
+    const enableBtn = document.getElementById('enableNotificationsBtn');
+    const settingsGroup = document.getElementById('notificationSettingsGroup');
+
+    if (enabled) {
+        if (badge) badge.className = 'notification-status-badge enabled';
+        if (statusText) statusText.textContent = 'Active';
+        if (enableBtn) enableBtn.style.display = 'none';
+        if (settingsGroup) settingsGroup.style.display = 'flex';
+    } else {
+        if (badge) badge.className = 'notification-status-badge';
+        if (statusText) statusText.textContent = customStatus || 'Disabled';
+        if (enableBtn) {
+            enableBtn.style.display = 'block';
+            if (customStatus === 'Blocked') {
+                enableBtn.textContent = 'Permission Blocked';
+                enableBtn.disabled = true;
+            }
+        }
+        if (settingsGroup) settingsGroup.style.display = 'none';
+    }
+}
+
+function checkClassNotifications(day, currentTime, now) {
+    if (!notificationsEnabled) return;
+
+    const todaySchedule = timetable.find(d => d.day === day);
+    if (!todaySchedule) return;
+
+    todaySchedule.classes.forEach(classData => {
+        const [startTime] = parseTimeRange(classData.time);
+        const timeDiffInMinutes = startTime - currentTime;
+
+        // Trigger alert only in the offset window (e.g. 5 minutes before start)
+        if (timeDiffInMinutes > 0 && timeDiffInMinutes <= notifyOffset) {
+            const classKey = `${classData.code}_${day}_${classData.time}`;
+            
+            if (!alertedClasses[classKey]) {
+                alertedClasses[classKey] = true;
+                
+                if (lockscreenCountdown) {
+                    startLockscreenCountdown(classData, startTime, classKey);
+                } else {
+                    sendStaticNotification(classData, timeDiffInMinutes);
+                }
+            }
+        }
+    });
+}
+
+function sendStaticNotification(classData, mins) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    const title = `Class starting in ${mins}m`;
+    const options = {
+        body: `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`,
+        icon: './favicon.svg',
+        badge: './favicon.svg',
+        tag: 'class-alert',
+        silent: !notifySound,
+        vibrate: notifySound ? [200, 100, 200] : []
+    };
+
+    showAppNotification(title, options);
+}
+
+function startLockscreenCountdown(classData, startMins, classKey) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    if (activeNotifications[classKey]) {
+        clearInterval(activeNotifications[classKey]);
+    }
+
+    let isFirstTick = true;
+
+    const interval = setInterval(() => {
+        const now = new Date();
+        const targetDate = new Date();
+        targetDate.setHours(Math.floor(startMins / 60), startMins % 60, 0, 0);
+
+        const diffMs = targetDate - now;
+        const totalSecs = Math.floor(diffMs / 1000);
+
+        if (totalSecs <= 0) {
+            const title = `Class Started!`;
+            const options = {
+                body: `${classData.code} • ${classData.name} has started in ${classData.location}.`,
+                icon: './favicon.svg',
+                badge: './favicon.svg',
+                tag: 'class-alert',
+                silent: !notifySound,
+                vibrate: notifySound ? [300, 100, 300] : []
+            };
+            
+            showAppNotification(title, options);
+            clearInterval(interval);
+            delete activeNotifications[classKey];
+            return;
+        }
+
+        const m = Math.floor(totalSecs / 60);
+        const s = totalSecs % 60;
+        const formattedTime = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        const title = `Starts in ${formattedTime}`;
+        const options = {
+            body: `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`,
+            icon: './favicon.svg',
+            badge: './favicon.svg',
+            tag: 'class-alert',
+            silent: isFirstTick ? !notifySound : true, // Only notify audibly on first tick
+            renotify: false,
+            vibrate: (isFirstTick && notifySound) ? [200, 100, 200] : []
+        };
+
+        showAppNotification(title, options);
+        isFirstTick = false;
+    }, 1000);
+
+    activeNotifications[classKey] = interval;
+}
+
+function showAppNotification(title, options) {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification(title, options);
+        }).catch(() => {
+            new Notification(title, options);
+        });
+    } else {
+        new Notification(title, options);
+    }
+}
+
+function runTestNotification() {
+    const testBtn = document.getElementById('testNotificationBtn');
+    if (!testBtn) return;
+    
+    testBtn.disabled = true;
+    testBtn.innerHTML = `Running simulation...`;
+
+    let secs = 5;
+    let isFirstTick = true;
+
+    const interval = setInterval(() => {
+        if (secs <= 0) {
+            clearInterval(interval);
+            const title = "Test Class Started!";
+            const options = {
+                body: "Artificial Intelligence (CSN304) has started. Alerts are active! 🎉",
+                icon: './favicon.svg',
+                badge: './favicon.svg',
+                tag: 'test-countdown',
+                silent: !notifySound,
+                vibrate: notifySound ? [300, 100, 300] : []
+            };
+            showAppNotification(title, options);
+            testBtn.disabled = false;
+            testBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                Send Test Alert (5s)
+            `;
+            return;
+        }
+
+        const title = `Starts in 00:0${secs}`;
+        const options = {
+            body: "CSN304 • Artificial Intelligence\n📍 Block - VISVESVARAYA\n👤 Neha Singh",
+            icon: './favicon.svg',
+            badge: './favicon.svg',
+            tag: 'test-countdown',
+            silent: isFirstTick ? !notifySound : true,
+            renotify: false,
+            vibrate: (isFirstTick && notifySound) ? [200, 100, 200] : []
+        };
+
+        showAppNotification(title, options);
+        isFirstTick = false;
+        secs--;
+    }, 1000);
 }
 
