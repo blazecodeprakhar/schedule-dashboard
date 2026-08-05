@@ -267,8 +267,37 @@ let notificationsEnabled = false;
 let notifyOffset = 5;
 let notifySound = true;
 let lockscreenCountdown = true;
-let alertedClasses = {};
+let alertedUpcoming = {};
+let alertedStarted = {};
 let activeNotifications = {};
+
+// Helper to load/save notification alerts
+function loadAlertedStates() {
+    const todayStr = new Date().toLocaleDateString('en-US');
+    const savedDay = localStorage.getItem('alertedDay');
+    
+    if (savedDay !== todayStr) {
+        // Reset for the new day
+        alertedUpcoming = {};
+        alertedStarted = {};
+        localStorage.setItem('alertedDay', todayStr);
+        localStorage.setItem('alertedUpcoming', '{}');
+        localStorage.setItem('alertedStarted', '{}');
+    } else {
+        try {
+            alertedUpcoming = JSON.parse(localStorage.getItem('alertedUpcoming') || '{}');
+            alertedStarted = JSON.parse(localStorage.getItem('alertedStarted') || '{}');
+        } catch (e) {
+            alertedUpcoming = {};
+            alertedStarted = {};
+        }
+    }
+}
+
+function saveAlertedStates() {
+    localStorage.setItem('alertedUpcoming', JSON.stringify(alertedUpcoming));
+    localStorage.setItem('alertedStarted', JSON.stringify(alertedStarted));
+}
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -319,8 +348,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateCurrentClass();
 
-    // Update every second
-    setInterval(updateCurrentClass, 1000);
+    // Use a Web Worker for ticking to prevent background tab throttling
+    let workerSupported = false;
+    try {
+        if (typeof(Worker) !== "undefined") {
+            const workerBlob = new Blob([
+                `setInterval(() => { self.postMessage('tick'); }, 1000);`
+            ], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(workerBlob);
+            const worker = new Worker(workerUrl);
+            worker.onmessage = () => {
+                updateCurrentClass();
+            };
+            workerSupported = true;
+            console.log('Web Worker registered for background timing.');
+        }
+    } catch (e) {
+        console.warn('Failed to start Web Worker timer, falling back to setInterval:', e);
+    }
+
+    if (!workerSupported) {
+        // Fallback to standard setInterval
+        setInterval(updateCurrentClass, 1000);
+    }
 
     // Initialize notifications system UI and state
     initNotifications();
@@ -790,6 +840,9 @@ function initNotifications() {
     notifySound = localStorage.getItem('notifySound') !== 'false';
     lockscreenCountdown = localStorage.getItem('lockscreenCountdown') !== 'false';
 
+    // Load alerted states
+    loadAlertedStates();
+
     // Set UI elements based on saved settings
     document.getElementById('notificationOffset').value = notifyOffset;
     document.getElementById('notificationSound').checked = notifySound;
@@ -873,21 +926,48 @@ function checkClassNotifications(day, currentTime, now) {
     if (!todaySchedule) return;
 
     todaySchedule.classes.forEach(classData => {
-        const [startTime] = parseTimeRange(classData.time);
+        const [startTime, endTime] = parseTimeRange(classData.time);
         const timeDiffInMinutes = startTime - currentTime;
+        const classKey = `${classData.code}_${day}_${classData.time}`;
 
-        // Trigger alert only in the offset window (e.g. 5 minutes before start)
+        // 1. Upcoming Alert (e.g. 5 minutes before start)
         if (timeDiffInMinutes > 0 && timeDiffInMinutes <= notifyOffset) {
-            const classKey = `${classData.code}_${day}_${classData.time}`;
-            
-            if (!alertedClasses[classKey]) {
-                alertedClasses[classKey] = true;
+            if (!alertedUpcoming[classKey]) {
+                alertedUpcoming[classKey] = true;
+                saveAlertedStates();
                 
                 if (lockscreenCountdown) {
                     startLockscreenCountdown(classData, startTime, classKey);
                 } else {
                     sendStaticNotification(classData, timeDiffInMinutes);
                 }
+            }
+        }
+
+        // 2. Class Started Alert (fallback & live verification)
+        // If class has started and hasn't ended yet, and we haven't sent the started alert
+        if (currentTime >= startTime && currentTime < endTime) {
+            if (!alertedStarted[classKey]) {
+                alertedStarted[classKey] = true;
+                saveAlertedStates();
+
+                // Make sure countdown interval is cleared since class started
+                if (activeNotifications[classKey]) {
+                    clearInterval(activeNotifications[classKey]);
+                    delete activeNotifications[classKey];
+                }
+
+                // Send Class Started notification
+                const title = `Class Started!`;
+                const options = {
+                    body: `${classData.code} • ${classData.name} has started in ${classData.location}.`,
+                    icon: './favicon.svg',
+                    badge: './favicon.svg',
+                    tag: 'class-alert',
+                    silent: !notifySound,
+                    vibrate: notifySound ? [300, 100, 300] : []
+                };
+                showAppNotification(title, options);
             }
         }
     });
@@ -940,6 +1020,10 @@ function startLockscreenCountdown(classData, startMins, classKey) {
             showAppNotification(title, options);
             clearInterval(interval);
             delete activeNotifications[classKey];
+
+            // Set started alert to true so the fallback block doesn't trigger it again
+            alertedStarted[classKey] = true;
+            saveAlertedStates();
             return;
         }
 
