@@ -817,12 +817,106 @@ function updateTimerForUpcoming(timeRange) {
 // Class Notifications Features
 // ==========================================
 
+// ==========================================
+// Web Audio Synthesizer for Class Alert Chimes
+// ==========================================
+function playNotificationChime() {
+    if (!notifySound) return;
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        const now = ctx.currentTime;
+
+        // Note 1 (D5 - 587.33Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0, now);
+        gain1.gain.linearRampToValueAtTime(0.15, now + 0.05);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.5);
+
+        // Note 2 (A5 - 880Hz)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.15);
+        gain2.gain.setValueAtTime(0, now + 0.15);
+        gain2.gain.linearRampToValueAtTime(0.2, now + 0.2);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.8);
+    } catch (e) {
+        console.warn('AudioContext playback error:', e);
+    }
+}
+
+// In-App Toast Notification
+function showInAppToast(title, body) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-item';
+    toast.innerHTML = `
+        <div class="toast-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-body">${body.replace(/\n/g, '<br>')}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-fade-out');
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 6000);
+}
+
+// Service Worker Sync Helper
+function syncScheduleToSW() {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'SYNC_SCHEDULE',
+            timetable: timetable,
+            notifyOffset: notifyOffset,
+            notifySound: notifySound
+        });
+    }
+}
+
+// ==========================================
+// Class Notifications System Setup & Handlers
+// ==========================================
+
 function initNotifications() {
-    const isSupported = 'Notification' in window && 'serviceWorker' in navigator;
+    const isSupported = 'Notification' in window;
     const badge = document.getElementById('notificationStatusBadge');
     const statusText = document.getElementById('notificationStatusText');
     const enableBtn = document.getElementById('enableNotificationsBtn');
     const settingsGroup = document.getElementById('notificationSettingsGroup');
+    const testSoundBtn = document.getElementById('testSoundBtn');
 
     if (!isSupported) {
         if (badge) badge.className = 'notification-status-badge unsupported';
@@ -843,55 +937,86 @@ function initNotifications() {
     // Load alerted states
     loadAlertedStates();
 
-    // Set UI elements based on saved settings
-    document.getElementById('notificationOffset').value = notifyOffset;
-    document.getElementById('notificationSound').checked = notifySound;
-    document.getElementById('notificationCountdown').checked = lockscreenCountdown;
+    // Sync UI elements
+    const offsetEl = document.getElementById('notificationOffset');
+    const soundEl = document.getElementById('notificationSound');
+    const countdownEl = document.getElementById('notificationCountdown');
+
+    if (offsetEl) offsetEl.value = notifyOffset;
+    if (soundEl) soundEl.checked = notifySound;
+    if (countdownEl) countdownEl.checked = lockscreenCountdown;
 
     // Check permission
     if (Notification.permission === 'granted' && notificationsEnabled) {
         updateNotificationsUI(true);
+        syncScheduleToSW();
     } else if (Notification.permission === 'denied') {
         updateNotificationsUI(false, 'Blocked');
     } else {
         updateNotificationsUI(false);
     }
 
-    // Event listeners
-    enableBtn.addEventListener('click', () => {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                notificationsEnabled = true;
-                localStorage.setItem('notificationsEnabled', 'true');
-                updateNotificationsUI(true);
-                showAppNotification('Alerts Activated!', {
-                    body: `You will get real-time class alerts ${notifyOffset}m before start time.`,
-                    icon: './favicon.svg',
-                    badge: './favicon.svg',
-                    tag: 'welcome-alert'
-                });
-            } else if (permission === 'denied') {
-                updateNotificationsUI(false, 'Blocked');
-            }
+    // Enable Notifications Button
+    if (enableBtn) {
+        enableBtn.addEventListener('click', () => {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    notificationsEnabled = true;
+                    localStorage.setItem('notificationsEnabled', 'true');
+                    updateNotificationsUI(true);
+                    syncScheduleToSW();
+                    playNotificationChime();
+
+                    showAppNotification('Class Alerts Active! 🎉', {
+                        body: `You will get class notifications ${notifyOffset}m before start time.`,
+                        icon: './favicon.svg',
+                        badge: './favicon.svg',
+                        tag: 'welcome-alert'
+                    });
+                } else if (permission === 'denied') {
+                    updateNotificationsUI(false, 'Blocked');
+                }
+            });
         });
-    });
+    }
 
-    document.getElementById('notificationOffset').addEventListener('change', (e) => {
-        notifyOffset = parseInt(e.target.value, 10);
-        localStorage.setItem('notifyOffset', notifyOffset);
-    });
+    // Settings changes
+    if (offsetEl) {
+        offsetEl.addEventListener('change', (e) => {
+            notifyOffset = parseInt(e.target.value, 10);
+            localStorage.setItem('notifyOffset', notifyOffset);
+            syncScheduleToSW();
+        });
+    }
 
-    document.getElementById('notificationSound').addEventListener('change', (e) => {
-        notifySound = e.target.checked;
-        localStorage.setItem('notifySound', notifySound);
-    });
+    if (soundEl) {
+        soundEl.addEventListener('change', (e) => {
+            notifySound = e.target.checked;
+            localStorage.setItem('notifySound', notifySound);
+            syncScheduleToSW();
+        });
+    }
 
-    document.getElementById('notificationCountdown').addEventListener('change', (e) => {
-        lockscreenCountdown = e.target.checked;
-        localStorage.setItem('lockscreenCountdown', lockscreenCountdown);
-    });
+    if (countdownEl) {
+        countdownEl.addEventListener('change', (e) => {
+            lockscreenCountdown = e.target.checked;
+            localStorage.setItem('lockscreenCountdown', lockscreenCountdown);
+        });
+    }
 
-    document.getElementById('testNotificationBtn').addEventListener('click', runTestNotification);
+    // Sound Test Button
+    if (testSoundBtn) {
+        testSoundBtn.addEventListener('click', () => {
+            playNotificationChime();
+            showInAppToast('Audio Chime Preview', 'This is how your class alert sound will sound.');
+        });
+    }
+
+    // Send Test Notification Button
+    const testNotifBtn = document.getElementById('testNotificationBtn');
+    if (testNotifBtn) {
+        testNotifBtn.addEventListener('click', runTestNotification);
+    }
 }
 
 function updateNotificationsUI(enabled, customStatus) {
@@ -930,131 +1055,66 @@ function checkClassNotifications(day, currentTime, now) {
         const timeDiffInMinutes = startTime - currentTime;
         const classKey = `${classData.code}_${day}_${classData.time}`;
 
-        // 1. Upcoming Alert (e.g. 5 minutes before start)
+        // 1. Primary Milestone Alert (e.g. 5 minutes before start)
         if (timeDiffInMinutes > 0 && timeDiffInMinutes <= notifyOffset) {
             if (!alertedUpcoming[classKey]) {
                 alertedUpcoming[classKey] = true;
                 saveAlertedStates();
-                
-                if (lockscreenCountdown) {
-                    startLockscreenCountdown(classData, startTime, classKey);
-                } else {
-                    sendStaticNotification(classData, timeDiffInMinutes);
-                }
+                sendMilestoneNotification(classData, timeDiffInMinutes);
             }
         }
 
-        // 2. Class Started Alert (fallback & live verification)
-        // If class has started and hasn't ended yet, and we haven't sent the started alert
+        // 2. Final 1-Minute Warning Alert
+        const oneMinKey = `${classKey}_1m`;
+        if (timeDiffInMinutes === 1 && !alertedUpcoming[oneMinKey]) {
+            alertedUpcoming[oneMinKey] = true;
+            saveAlertedStates();
+            sendMilestoneNotification(classData, 1);
+        }
+
+        // 3. Class Started Alert
         if (currentTime >= startTime && currentTime < endTime) {
             if (!alertedStarted[classKey]) {
                 alertedStarted[classKey] = true;
                 saveAlertedStates();
 
-                // Make sure countdown interval is cleared since class started
-                if (activeNotifications[classKey]) {
-                    clearInterval(activeNotifications[classKey]);
-                    delete activeNotifications[classKey];
-                }
-
-                // Send Class Started notification
+                playNotificationChime();
                 const title = `Class Started!`;
-                const options = {
-                    body: `${classData.code} • ${classData.name} has started in ${classData.location}.`,
+                const body = `${classData.code} • ${classData.name} has started in ${classData.location}.`;
+                
+                showAppNotification(title, {
+                    body: body,
                     icon: './favicon.svg',
                     badge: './favicon.svg',
-                    tag: 'class-alert',
-                    silent: !notifySound,
+                    tag: `class-started-${classData.code}`,
                     vibrate: notifySound ? [300, 100, 300] : []
-                };
-                showAppNotification(title, options);
+                });
             }
         }
     });
 }
 
-function sendStaticNotification(classData, mins) {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+function sendMilestoneNotification(classData, mins) {
+    playNotificationChime();
+    const title = `Class starting in ${mins} minute${mins > 1 ? 's' : ''}!`;
+    const body = `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`;
 
-    const title = `Class starting in ${mins}m`;
-    const options = {
-        body: `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`,
+    showAppNotification(title, {
+        body: body,
         icon: './favicon.svg',
         badge: './favicon.svg',
-        tag: 'class-alert',
-        silent: !notifySound,
+        tag: `class-alert-${classData.code}`,
         vibrate: notifySound ? [200, 100, 200] : []
-    };
-
-    showAppNotification(title, options);
-}
-
-function startLockscreenCountdown(classData, startMins, classKey) {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
-
-    if (activeNotifications[classKey]) {
-        clearInterval(activeNotifications[classKey]);
-    }
-
-    let isFirstTick = true;
-
-    const interval = setInterval(() => {
-        const now = new Date();
-        const targetDate = new Date();
-        targetDate.setHours(Math.floor(startMins / 60), startMins % 60, 0, 0);
-
-        const diffMs = targetDate - now;
-        const totalSecs = Math.floor(diffMs / 1000);
-
-        if (totalSecs <= 0) {
-            const title = `Class Started!`;
-            const options = {
-                body: `${classData.code} • ${classData.name} has started in ${classData.location}.`,
-                icon: './favicon.svg',
-                badge: './favicon.svg',
-                tag: 'class-alert',
-                silent: !notifySound,
-                vibrate: notifySound ? [300, 100, 300] : []
-            };
-            
-            showAppNotification(title, options);
-            clearInterval(interval);
-            delete activeNotifications[classKey];
-
-            // Set started alert to true so the fallback block doesn't trigger it again
-            alertedStarted[classKey] = true;
-            saveAlertedStates();
-            return;
-        }
-
-        const m = Math.floor(totalSecs / 60);
-        const s = totalSecs % 60;
-        const formattedTime = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-        const title = `Starts in ${formattedTime}`;
-        const options = {
-            body: `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`,
-            icon: './favicon.svg',
-            badge: './favicon.svg',
-            tag: 'class-alert',
-            silent: isFirstTick ? !notifySound : true, // Only notify audibly on first tick
-            renotify: false,
-            vibrate: (isFirstTick && notifySound) ? [200, 100, 200] : []
-        };
-
-        showAppNotification(title, options);
-        isFirstTick = false;
-    }, 1000);
-
-    activeNotifications[classKey] = interval;
+    });
 }
 
 function showAppNotification(title, options) {
-    if (options && options.silent) {
-        delete options.vibrate;
-    }
+    // Show in-app toast banner as immediate visual fallback
+    showInAppToast(title, options.body || '');
 
-    if ('serviceWorker' in navigator) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(reg => {
             reg.showNotification(title, options);
         }).catch(() => {
@@ -1070,49 +1130,31 @@ function runTestNotification() {
     if (!testBtn) return;
     
     testBtn.disabled = true;
-    testBtn.innerHTML = `Running simulation...`;
+    testBtn.innerHTML = `Sending Test Alert...`;
 
-    let secs = 5;
-    let isFirstTick = true;
+    playNotificationChime();
 
-    const interval = setInterval(() => {
-        if (secs <= 0) {
-            clearInterval(interval);
-            const title = "Test Class Started!";
-            const options = {
-                body: "Artificial Intelligence (CSN304) has started. Alerts are active! 🎉",
-                icon: './favicon.svg',
-                badge: './favicon.svg',
-                tag: 'test-countdown',
-                silent: !notifySound,
-                vibrate: notifySound ? [300, 100, 300] : []
-            };
-            showAppNotification(title, options);
-            testBtn.disabled = false;
-            testBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                Send Test Alert (5s)
-            `;
-            return;
-        }
+    const title = "Test Class Alert 🔔";
+    const body = "CSN304 • Artificial Intelligence starting in 5 mins!\n📍 Block - VEDANTA\n👤 Neha Singh";
 
-        const title = `Starts in 00:0${secs}`;
-        const options = {
-            body: "CSN304 • Artificial Intelligence\n📍 Block - VISVESVARAYA\n👤 Neha Singh",
-            icon: './favicon.svg',
-            badge: './favicon.svg',
-            tag: 'test-countdown',
-            silent: isFirstTick ? !notifySound : true,
-            renotify: false,
-            vibrate: (isFirstTick && notifySound) ? [200, 100, 200] : []
-        };
+    showAppNotification(title, {
+        body: body,
+        icon: './favicon.svg',
+        badge: './favicon.svg',
+        tag: 'test-alert',
+        vibrate: notifySound ? [200, 100, 200] : []
+    });
 
-        showAppNotification(title, options);
-        isFirstTick = false;
-        secs--;
-    }, 1000);
+    setTimeout(() => {
+        testBtn.disabled = false;
+        testBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            Send Test Alert
+        `;
+    }, 1500);
 }
+
 
