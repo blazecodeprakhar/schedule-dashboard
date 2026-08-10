@@ -935,6 +935,37 @@ function initNotifications() {
         return;
     }
 
+    // Settings Modal Handlers
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const settingsModalOverlay = document.getElementById('settingsModalOverlay');
+
+    if (openSettingsBtn && settingsModalOverlay) {
+        openSettingsBtn.addEventListener('click', () => {
+            settingsModalOverlay.classList.add('active');
+        });
+    }
+
+    if (closeSettingsBtn && settingsModalOverlay) {
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModalOverlay.classList.remove('active');
+        });
+    }
+
+    if (settingsModalOverlay) {
+        settingsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === settingsModalOverlay) {
+                settingsModalOverlay.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && settingsModalOverlay.classList.contains('active')) {
+                settingsModalOverlay.classList.remove('active');
+            }
+        });
+    }
+
     // Load saved settings
     notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
     notifyOffset = parseInt(localStorage.getItem('notifyOffset') || '5', 10);
