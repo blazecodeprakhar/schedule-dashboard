@@ -297,7 +297,29 @@ function loadAlertedStates() {
 function saveAlertedStates() {
     localStorage.setItem('alertedUpcoming', JSON.stringify(alertedUpcoming));
     localStorage.setItem('alertedStarted', JSON.stringify(alertedStarted));
+    syncScheduleToSW();
 }
+
+let deferredPwaPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) {
+        installBtn.style.display = 'flex';
+        installBtn.onclick = () => {
+            if (!deferredPwaPrompt) return;
+            deferredPwaPrompt.prompt();
+            deferredPwaPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted PWA installation');
+                }
+                deferredPwaPrompt = null;
+                installBtn.style.display = 'none';
+            });
+        };
+    }
+});
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -306,6 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 console.log('Service Worker Registered');
+                navigator.serviceWorker.ready.then(() => {
+                    syncScheduleToSW();
+                });
                 
                 // Trigger page refresh if update is found and installed
                 reg.onupdatefound = () => {
@@ -863,46 +888,26 @@ function playNotificationChime() {
     }
 }
 
-// In-App Toast Notification
-function showInAppToast(title, body) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-
-    const toast = document.createElement('div');
-    toast.className = 'toast-item';
-    toast.innerHTML = `
-        <div class="toast-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-        </div>
-        <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <div class="toast-body">${body.replace(/\n/g, '<br>')}</div>
-        </div>
-        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
-    `;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.classList.add('toast-fade-out');
-            setTimeout(() => toast.remove(), 400);
-        }
-    }, 6000);
-}
-
 // Service Worker Sync Helper
 function syncScheduleToSW() {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
+    if ('serviceWorker' in navigator) {
+        const payload = {
             type: 'SYNC_SCHEDULE',
             timetable: timetable,
             notifyOffset: notifyOffset,
-            notifySound: notifySound
-        });
+            notifySound: notifySound,
+            alertedKeys: Object.keys(alertedUpcoming).concat(Object.keys(alertedStarted))
+        };
+
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage(payload);
+        } else {
+            navigator.serviceWorker.ready.then(reg => {
+                if (reg.active) {
+                    reg.active.postMessage(payload);
+                }
+            });
+        }
     }
 }
 
@@ -969,7 +974,7 @@ function initNotifications() {
 
                     showAppNotification('Class Alerts Active! 🎉', {
                         body: `You will get class notifications ${notifyOffset}m before start time.`,
-                        icon: './favicon.svg',
+                        icon: './icon-192.png',
                         badge: './favicon.svg',
                         tag: 'welcome-alert'
                     });
@@ -1008,7 +1013,6 @@ function initNotifications() {
     if (testSoundBtn) {
         testSoundBtn.addEventListener('click', () => {
             playNotificationChime();
-            showInAppToast('Audio Chime Preview', 'This is how your class alert sound will sound.');
         });
     }
 
@@ -1050,10 +1054,12 @@ function checkClassNotifications(day, currentTime, now) {
     const todaySchedule = timetable.find(d => d.day === day);
     if (!todaySchedule) return;
 
+    const todayStr = now ? now.toDateString() : new Date().toDateString();
+
     todaySchedule.classes.forEach(classData => {
         const [startTime, endTime] = parseTimeRange(classData.time);
         const timeDiffInMinutes = startTime - currentTime;
-        const classKey = `${classData.code}_${day}_${classData.time}`;
+        const classKey = `${classData.code}_${day}_${classData.time}_${todayStr}`;
 
         // 1. Primary Milestone Alert (e.g. 5 minutes before start)
         if (timeDiffInMinutes > 0 && timeDiffInMinutes <= notifyOffset) {
@@ -1084,7 +1090,7 @@ function checkClassNotifications(day, currentTime, now) {
                 
                 showAppNotification(title, {
                     body: body,
-                    icon: './favicon.svg',
+                    icon: './icon-192.png',
                     badge: './favicon.svg',
                     tag: `class-started-${classData.code}`,
                     vibrate: notifySound ? [300, 100, 300] : []
@@ -1096,12 +1102,12 @@ function checkClassNotifications(day, currentTime, now) {
 
 function sendMilestoneNotification(classData, mins) {
     playNotificationChime();
-    const title = `Class starting in ${mins} minute${mins > 1 ? 's' : ''}!`;
+    const title = `Class starting in ${mins} minute${mins > 1 ? 's' : ''}! ⏰`;
     const body = `${classData.code} • ${classData.name}\n📍 ${classData.location}\n👤 ${classData.instructor}`;
 
     showAppNotification(title, {
         body: body,
-        icon: './favicon.svg',
+        icon: './icon-192.png',
         badge: './favicon.svg',
         tag: `class-alert-${classData.code}`,
         vibrate: notifySound ? [200, 100, 200] : []
@@ -1109,19 +1115,34 @@ function sendMilestoneNotification(classData, mins) {
 }
 
 function showAppNotification(title, options) {
-    // Show in-app toast banner as immediate visual fallback
-    showInAppToast(title, options.body || '');
-
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    const notifOptions = Object.assign({
+        icon: './icon-192.png',
+        badge: './favicon.svg',
+        vibrate: notifySound ? [200, 100, 200] : [],
+        requireInteraction: true,
+        renotify: true,
+        data: { url: './' }
+    }, options || {});
+
+    if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification(title, options);
-        }).catch(() => {
-            new Notification(title, options);
+            return reg.showNotification(title, notifOptions);
+        }).catch(err => {
+            console.warn('SW showNotification error:', err);
+            try {
+                new Notification(title, notifOptions);
+            } catch (e) {
+                console.error('Direct Notification failed:', e);
+            }
         });
     } else {
-        new Notification(title, options);
+        try {
+            new Notification(title, notifOptions);
+        } catch (e) {
+            console.error('Direct Notification failed:', e);
+        }
     }
 }
 
@@ -1139,7 +1160,7 @@ function runTestNotification() {
 
     showAppNotification(title, {
         body: body,
-        icon: './favicon.svg',
+        icon: './icon-192.png',
         badge: './favicon.svg',
         tag: 'test-alert',
         vibrate: notifySound ? [200, 100, 200] : []

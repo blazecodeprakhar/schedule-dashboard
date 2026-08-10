@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -27,7 +27,6 @@
                     <p class="student-details">ERP: 1000024015 | BTech CSE - Cybersecurity and Privacy</p>
                     <p class="semester-info">Semester: ODD 2026-27 | Credits: 23</p>
                 </div>
-
             </div>
         </div>
     </header>
@@ -88,10 +87,11 @@
                         </div>
                         <div class="notification-card-body">
                             <p class="notification-description">
-                                Receive smart class reminders before start time. Works via Service Worker for active background & lockscreen alerts.
+                                Receive smart class reminders before start time. Pushes directly to your phone lockscreen and notification bar.
                             </p>
                             <div class="notification-controls">
-                                <button class="action-btn" id="enableNotificationsBtn">Enable Notifications</button>
+                                <button class="action-btn" id="enableNotificationsBtn">Enable Phone Notifications</button>
+                                <button class="pwa-install-btn" id="pwaInstallBtn" style="display: none;">📱 Install App on Phone</button>
                                 
                                 <div class="settings-group" id="notificationSettingsGroup" style="display: none;">
                                     <label class="settings-label" for="notificationOffset">Notify Me Before</label>
@@ -142,7 +142,7 @@
                                             Mobile & Background Tip
                                         </div>
                                         <p class="pwa-info-text">
-                                            For guaranteed background alerts on Mobile: tap <strong>Add to Home Screen</strong> or <strong>Install App</strong> in your browser menu, and allow notification permissions.
+                                            For guaranteed phone background alerts: tap <strong>Install App on Phone</strong> or <strong>Add to Home Screen</strong> in your browser menu, and allow notification permissions.
                                         </p>
                                     </div>
                                 </div>

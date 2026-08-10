@@ -1,19 +1,19 @@
-const CACHE_NAME = 'timetable-v6';
+const CACHE_NAME = 'timetable-v7';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
     './script.js',
     './favicon.svg',
+    './icon-192.png',
+    './icon-512.png',
     './manifest.json',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap',
-    'https://cdn-icons-png.flaticon.com/512/3917/3917244.png'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'
 ];
 
 // Install Event - Cache Files & Skip Waiting
 self.addEventListener('install', (event) => {
     self.skipWaiting();
-
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => cache.addAll(ASSETS))
@@ -86,16 +86,22 @@ self.addEventListener('message', (event) => {
         swTimetable = event.data.timetable || [];
         swNotifyOffset = event.data.notifyOffset || 5;
         swNotifySound = event.data.notifySound !== false;
+        if (event.data.alertedKeys && Array.isArray(event.data.alertedKeys)) {
+            event.data.alertedKeys.forEach(k => swAlertedKeys.add(k));
+        }
         checkBackgroundSchedule();
-    } else if (event.data.type === 'TEST_NOTIFICATION') {
-        self.registration.showNotification(event.data.title || 'Test Alert', {
-            body: event.data.body || 'Class Alerts are working perfectly via Service Worker!',
-            icon: './favicon.svg',
+    } else if (event.data.type === 'TRIGGER_NOTIFICATION') {
+        const { title, options } = event.data;
+        const notificationOptions = Object.assign({
+            icon: './icon-192.png',
             badge: './favicon.svg',
-            tag: 'sw-test-alert',
-            vibrate: [200, 100, 200],
+            vibrate: swNotifySound ? [200, 100, 200, 100, 200] : [],
+            requireInteraction: true,
+            renotify: true,
             data: { url: './' }
-        });
+        }, options || {});
+
+        self.registration.showNotification(title, notificationOptions);
     }
 });
 
@@ -131,7 +137,7 @@ function checkBackgroundSchedule() {
     if (!todayData || !todayData.classes) return;
 
     todayData.classes.forEach(cls => {
-        const [startStr] = cls.time.split('-');
+        const [startStr, endStr] = cls.time.split('-');
         const [startH, startM] = startStr.split(':').map(Number);
         const startTimeMins = startH * 60 + startM;
         const diffMins = startTimeMins - currentTimeMins;
@@ -140,12 +146,14 @@ function checkBackgroundSchedule() {
 
         if (diffMins > 0 && diffMins <= swNotifyOffset && !swAlertedKeys.has(classKey)) {
             swAlertedKeys.add(classKey);
-            self.registration.showNotification(`Class starting in ${diffMins} minute${diffMins > 1 ? 's' : ''}!`, {
-                body: `${cls.code} - ${cls.name}\n📍 ${cls.location}\n👤 ${cls.instructor}`,
-                icon: './favicon.svg',
+            self.registration.showNotification(`Class starting in ${diffMins} minute${diffMins > 1 ? 's' : ''}! ⏰`, {
+                body: `${cls.code} • ${cls.name}\n📍 ${cls.location}\n👤 ${cls.instructor}`,
+                icon: './icon-192.png',
                 badge: './favicon.svg',
                 tag: `class-alert-${cls.code}`,
                 vibrate: swNotifySound ? [300, 100, 300] : [],
+                requireInteraction: true,
+                renotify: true,
                 data: { url: './' }
             });
         }
@@ -160,5 +168,5 @@ self.addEventListener('periodicsync', (event) => {
 });
 
 // Fallback interval check while worker is alive
-setInterval(checkBackgroundSchedule, 60000);
+setInterval(checkBackgroundSchedule, 30000);
 
