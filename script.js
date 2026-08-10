@@ -624,13 +624,15 @@ function displayCurrentClass(classData, nextClassData) {
     const classLocation = document.getElementById('currentClassLocation');
     const classInstructor = document.getElementById('currentClassInstructor');
     const timerSection = document.getElementById('timerSection');
+    const timerLabel = document.querySelector('.timer-label');
+
+    if (timerLabel) timerLabel.textContent = 'Time Remaining';
 
     card.classList.add('active');
     statusBadge.classList.add('active');
     statusText.textContent = 'In Progress';
 
     className.textContent = classData.name;
-    // Show time clearly with a clock icon styled in CSS or text
     classTime.innerHTML = `${classData.time}`;
     classLocation.textContent = classData.location;
     classInstructor.textContent = `${classData.instructor} • ${classData.type}`;
