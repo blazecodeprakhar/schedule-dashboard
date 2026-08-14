@@ -35,7 +35,7 @@ const timetable = [
             },
             {
                 code: 'PSYN386',
-                name: 'Health Psychology (Free Elective)',
+                name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
                 location: 'VISVESVARAYA 408 (Lecture Hall 8)',
@@ -80,7 +80,7 @@ const timetable = [
             },
             {
                 code: 'PSYN386',
-                name: 'Health Psychology (Free Elective)',
+                name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
                 location: 'VISVESVARAYA 408 (Lecture Hall 8)',
@@ -135,7 +135,7 @@ const timetable = [
             },
             {
                 code: 'PSYN386',
-                name: 'Health Psychology (Free Elective)',
+                name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
                 location: 'VISVESVARAYA 408 (Lecture Hall 8)',
@@ -190,7 +190,7 @@ const timetable = [
             },
             {
                 code: 'PSYN386',
-                name: 'Health Psychology (Free Elective)',
+                name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
                 location: 'VISVESVARAYA 408 (Lecture Hall 8)',
