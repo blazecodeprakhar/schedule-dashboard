@@ -8,8 +8,8 @@ const timetable = [
                 name: 'Cyber Crime & Investigation',
                 type: 'Lecture',
                 time: '09:00-09:50',
-                location: 'VISH503 (Visvesvaraya 503)',
-                instructor: 'Mr. Arjun Singh',
+                location: 'VISH503 (Visvesvaraya 503 LH 3)',
+                instructor: 'Arjun Singh',
                 bucket: 'Discipline Elective',
                 credits: 3
             },
@@ -18,8 +18,8 @@ const timetable = [
                 name: 'Artificial Intelligence',
                 type: 'Lecture',
                 time: '10:00-10:50',
-                location: 'VISH503 (Visvesvaraya 503)',
-                instructor: 'Ms. Neha Singh',
+                location: 'VISH503 (Visvesvaraya 503 LH 3)',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -28,8 +28,8 @@ const timetable = [
                 name: 'Number Theory and Cryptology',
                 type: 'Lab (P1)',
                 time: '11:00-12:50',
-                location: 'VE423 (Vedanta 423 Lab)',
-                instructor: 'Mr. Kapil Dev Sharma',
+                location: 'VE423 (Vedanta 423 Lab 1)',
+                instructor: 'Kapil Dev Sharma',
                 bucket: 'Discipline Elective',
                 credits: 3
             },
@@ -38,7 +38,7 @@ const timetable = [
                 name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
-                location: 'VISVESVARAYA 408 (Lecture Hall 8)',
+                location: 'VISH408 (Visvesvaraya 408 LH 8)',
                 instructor: 'Mony Singh',
                 bucket: 'Free Elective',
                 credits: 3
@@ -53,8 +53,8 @@ const timetable = [
                 name: 'Advanced Java Programming',
                 type: 'Lecture',
                 time: '09:00-09:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Dr. Kirti Gupta',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -63,8 +63,8 @@ const timetable = [
                 name: 'Artificial Intelligence',
                 type: 'Lecture',
                 time: '10:00-10:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Ms. Neha Singh',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -73,8 +73,8 @@ const timetable = [
                 name: 'Advanced Java Programming',
                 type: 'Lab (P1)',
                 time: '11:00-12:50',
-                location: 'VE424 (Vedanta 424 Lab)',
-                instructor: 'Dr. Kirti Gupta',
+                location: 'VE424 (Vedanta 424 Lab 2)',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -83,7 +83,7 @@ const timetable = [
                 name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
-                location: 'VISVESVARAYA 408 (Lecture Hall 8)',
+                location: 'VISH408 (Visvesvaraya 408 LH 8)',
                 instructor: 'Mony Singh',
                 bucket: 'Free Elective',
                 credits: 3
@@ -93,8 +93,8 @@ const timetable = [
                 name: 'Cyber Crime & Investigation',
                 type: 'Lab (P1)',
                 time: '15:00-16:50',
-                location: 'VE512 (Vedanta 512 Lab)',
-                instructor: 'Mr. Arjun Singh',
+                location: 'VE512 (Vedanta 512 Lab 7)',
+                instructor: 'Arjun Singh',
                 bucket: 'Discipline Elective',
                 credits: 3
             }
@@ -108,8 +108,8 @@ const timetable = [
                 name: 'Computer Networks',
                 type: 'Lab (P1)',
                 time: '09:00-10:50',
-                location: 'VE425 (Vedanta 425 Lab)',
-                instructor: 'Mr. Vasu Bhatia',
+                location: 'VE425 (Vedanta 425 Lab 3)',
+                instructor: 'Vasu Bhatia',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -118,8 +118,8 @@ const timetable = [
                 name: 'Number Theory and Cryptology',
                 type: 'Lecture',
                 time: '11:00-11:50',
-                location: 'VE202 (Vedanta 202)',
-                instructor: 'Mr. Kapil Dev Sharma',
+                location: 'VE202 (Vedanta 202 LH 1)',
+                instructor: 'Kapil Dev Sharma',
                 bucket: 'Discipline Elective',
                 credits: 3
             },
@@ -128,28 +128,18 @@ const timetable = [
                 name: 'Aptitude and Soft Skills',
                 type: 'Lecture',
                 time: '12:00-12:50',
-                location: 'VE202 (Vedanta 202)',
+                location: 'VE202 (Vedanta 202 LH 1)',
                 instructor: 'Parul Kalia',
                 bucket: 'Value Added',
                 credits: 2
-            },
-            {
-                code: 'PSYN386',
-                name: 'Health Psychology',
-                type: 'Studio',
-                time: '14:00-14:50',
-                location: 'VISVESVARAYA 408 (Lecture Hall 8)',
-                instructor: 'Mony Singh',
-                bucket: 'Free Elective',
-                credits: 3
             },
             {
                 code: 'CSN303',
                 name: 'Computer Networks',
                 type: 'Lecture',
                 time: '15:00-15:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Mr. Vasu Bhatia',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Vasu Bhatia',
                 bucket: 'Discipline Core',
                 credits: 4
             }
@@ -163,8 +153,8 @@ const timetable = [
                 name: 'Advanced Java Programming',
                 type: 'Lecture',
                 time: '09:00-09:50',
-                location: 'VE226 (Vedanta 226)',
-                instructor: 'Dr. Kirti Gupta',
+                location: 'VE226 (Vedanta 226 LH 4)',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -173,8 +163,8 @@ const timetable = [
                 name: 'Cyber Crime & Investigation',
                 type: 'Lecture',
                 time: '10:00-10:50',
-                location: 'VE303 (Vedanta 303)',
-                instructor: 'Mr. Arjun Singh',
+                location: 'VE303 (Vedanta 303 LH 2)',
+                instructor: 'Arjun Singh',
                 bucket: 'Discipline Elective',
                 credits: 3
             },
@@ -183,8 +173,8 @@ const timetable = [
                 name: 'Artificial Intelligence',
                 type: 'Lab (P1)',
                 time: '11:00-12:50',
-                location: 'VE226 (Vedanta 226)',
-                instructor: 'Ms. Neha Singh',
+                location: 'VE226 (Vedanta 226 LH 4)',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -193,7 +183,7 @@ const timetable = [
                 name: 'Health Psychology',
                 type: 'Studio',
                 time: '14:00-14:50',
-                location: 'VISVESVARAYA 408 (Lecture Hall 8)',
+                location: 'VISH408 (Visvesvaraya 408 LH 8)',
                 instructor: 'Mony Singh',
                 bucket: 'Free Elective',
                 credits: 3
@@ -203,8 +193,8 @@ const timetable = [
                 name: 'Computer Networks',
                 type: 'Lecture',
                 time: '15:00-15:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Mr. Vasu Bhatia',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Vasu Bhatia',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -213,8 +203,8 @@ const timetable = [
                 name: 'Number Theory and Cryptology',
                 type: 'Lecture',
                 time: '16:00-16:50',
-                location: 'VE427 (Vedanta 427)',
-                instructor: 'Mr. Kapil Dev Sharma',
+                location: 'VE427 (Vedanta 427 LH 5)',
+                instructor: 'Kapil Dev Sharma',
                 bucket: 'Discipline Elective',
                 credits: 3
             }
@@ -228,7 +218,7 @@ const timetable = [
                 name: 'Aptitude and Soft Skills',
                 type: 'Lecture',
                 time: '09:00-09:50',
-                location: 'VISH401 (Visvesvaraya 401)',
+                location: 'VISH401 (Visvesvaraya 401 LH 1)',
                 instructor: 'Parul Kalia',
                 bucket: 'Value Added',
                 credits: 2
@@ -238,8 +228,8 @@ const timetable = [
                 name: 'Advanced Java Programming',
                 type: 'Lecture',
                 time: '10:00-10:50',
-                location: 'VISH502 (Visvesvaraya 502)',
-                instructor: 'Dr. Kirti Gupta',
+                location: 'VISH502 (Visvesvaraya 502 LH 2)',
+                instructor: 'Kirti Gupta',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -248,8 +238,8 @@ const timetable = [
                 name: 'Artificial Intelligence',
                 type: 'Lecture',
                 time: '11:00-11:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Ms. Neha Singh',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Neha Singh',
                 bucket: 'Discipline Core',
                 credits: 4
             },
@@ -258,8 +248,8 @@ const timetable = [
                 name: 'Computer Networks',
                 type: 'Lecture',
                 time: '12:00-12:50',
-                location: 'VE203 (Vedanta 203)',
-                instructor: 'Mr. Vasu Bhatia',
+                location: 'VE203 (Vedanta 203 LH 2)',
+                instructor: 'Vasu Bhatia',
                 bucket: 'Discipline Core',
                 credits: 4
             }
@@ -338,6 +328,19 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.serviceWorker.register('./sw.js')
             .then(reg => {
                 console.log('Service Worker Registered');
+                
+                // Request Periodic Sync if available
+                if ('periodicSync' in reg) {
+                    reg.periodicSync.register('check-timetable-schedule', {
+                        minInterval: 60 * 1000 // 1 minute
+                    }).catch(err => console.log('Periodic sync registration error:', err));
+                }
+
+                // Request Sync if available
+                if ('sync' in reg) {
+                    reg.sync.register('timetable-sync').catch(err => console.log('Sync registration error:', err));
+                }
+
                 navigator.serviceWorker.ready.then(() => {
                     syncScheduleToSW();
                 });
@@ -1150,7 +1153,7 @@ function sendMilestoneNotification(classData, mins) {
 
     showAppNotification(title, {
         body: body,
-        icon: './icon-192.png',
+        icon: './icon-maskable.svg',
         badge: './favicon.svg',
         tag: `class-alert-${classData.code}`,
         vibrate: notifySound ? [200, 100, 200] : []
@@ -1161,7 +1164,7 @@ function showAppNotification(title, options) {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
     const notifOptions = Object.assign({
-        icon: './icon-192.png',
+        icon: './icon-maskable.svg',
         badge: './favicon.svg',
         vibrate: notifySound ? [200, 100, 200] : [],
         requireInteraction: true,

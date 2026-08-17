@@ -1,7 +1,7 @@
 {
     "name": "Prakhar Timetable",
     "short_name": "Timetable",
-    "id": "prakhar-college-timetable-v1",
+    "id": "prakhar-college-timetable-v2",
     "scope": "./",
     "description": "Student Timetable & Class Notifications",
     "start_url": "./index.html",
@@ -11,21 +11,28 @@
     "theme_color": "#020617",
     "icons": [
         {
+            "src": "icon-maskable.svg",
+            "type": "image/svg+xml",
+            "sizes": "512x512 192x192 any",
+            "purpose": "maskable"
+        },
+        {
+            "src": "favicon.svg",
+            "type": "image/svg+xml",
+            "sizes": "any",
+            "purpose": "any"
+        },
+        {
             "src": "icon-192.png",
             "type": "image/png",
             "sizes": "192x192",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "icon-512.png",
             "type": "image/png",
             "sizes": "512x512",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "favicon.svg",
-            "type": "image/svg+xml",
-            "sizes": "any"
+            "purpose": "any"
         }
     ]
 }

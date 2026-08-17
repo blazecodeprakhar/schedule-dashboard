@@ -1,10 +1,11 @@
-const CACHE_NAME = 'timetable-v13';
+const CACHE_NAME = 'timetable-v16';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
     './script.js',
     './favicon.svg',
+    './icon-maskable.svg',
     './icon-192.png',
     './icon-512.png',
     './manifest.json',
@@ -73,6 +74,55 @@ self.addEventListener('fetch', (event) => {
 // Service Worker Notification Handlers & Background Sync
 // ==========================================
 
+// ==========================================
+// IndexedDB & Local Storage Fallback for Closed App Background Alerts
+// ==========================================
+
+function getScheduleFromIDB() {
+    return new Promise((resolve) => {
+        try {
+            const req = indexedDB.open('TimetableAppDB', 1);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('settings')) {
+                    db.createObjectStore('settings');
+                }
+            };
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                const tx = db.transaction('settings', 'readonly');
+                const store = tx.objectStore('settings');
+                const getReq = store.get('timetableState');
+                getReq.onsuccess = () => resolve(getReq.result || null);
+                getReq.onerror = () => resolve(null);
+            };
+            req.onerror = () => resolve(null);
+        } catch (e) {
+            resolve(null);
+        }
+    });
+}
+
+function saveScheduleToIDB(data) {
+    try {
+        const req = indexedDB.open('TimetableAppDB', 1);
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('settings')) {
+                db.createObjectStore('settings');
+            }
+        };
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            const tx = db.transaction('settings', 'readwrite');
+            const store = tx.objectStore('settings');
+            store.put(data, 'timetableState');
+        };
+    } catch (e) {
+        console.warn('IDB write failed:', e);
+    }
+}
+
 let swTimetable = [];
 let swNotifyOffset = 5;
 let swNotifySound = true;
@@ -89,11 +139,20 @@ self.addEventListener('message', (event) => {
         if (event.data.alertedKeys && Array.isArray(event.data.alertedKeys)) {
             event.data.alertedKeys.forEach(k => swAlertedKeys.add(k));
         }
+
+        // Save state persistently so SW can restore when app is completely closed
+        saveScheduleToIDB({
+            timetable: swTimetable,
+            notifyOffset: swNotifyOffset,
+            notifySound: swNotifySound,
+            alertedKeys: Array.from(swAlertedKeys)
+        });
+
         checkBackgroundSchedule();
     } else if (event.data.type === 'TRIGGER_NOTIFICATION') {
         const { title, options } = event.data;
         const notificationOptions = Object.assign({
-            icon: './icon-192.png',
+            icon: './icon-maskable.svg',
             badge: './favicon.svg',
             vibrate: swNotifySound ? [200, 100, 200, 100, 200] : [],
             requireInteraction: true,
@@ -126,7 +185,19 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // Periodic background check timer within active Service Worker lifecycle
-function checkBackgroundSchedule() {
+async function checkBackgroundSchedule() {
+    if (!swTimetable || swTimetable.length === 0) {
+        const cached = await getScheduleFromIDB();
+        if (cached && cached.timetable) {
+            swTimetable = cached.timetable;
+            swNotifyOffset = cached.notifyOffset || 5;
+            swNotifySound = cached.notifySound !== false;
+            if (cached.alertedKeys) {
+                cached.alertedKeys.forEach(k => swAlertedKeys.add(k));
+            }
+        }
+    }
+
     if (!swTimetable || swTimetable.length === 0) return;
 
     const now = new Date();
@@ -146,9 +217,18 @@ function checkBackgroundSchedule() {
 
         if (diffMins > 0 && diffMins <= swNotifyOffset && !swAlertedKeys.has(classKey)) {
             swAlertedKeys.add(classKey);
+            
+            // Persist alerted key
+            saveScheduleToIDB({
+                timetable: swTimetable,
+                notifyOffset: swNotifyOffset,
+                notifySound: swNotifySound,
+                alertedKeys: Array.from(swAlertedKeys)
+            });
+
             self.registration.showNotification(`Class starting in ${diffMins} minute${diffMins > 1 ? 's' : ''}! ⏰`, {
                 body: `${cls.code} • ${cls.name}\n📍 ${cls.location}\n👤 ${cls.instructor}`,
-                icon: './icon-192.png',
+                icon: './icon-maskable.svg',
                 badge: './favicon.svg',
                 tag: `class-alert-${cls.code}`,
                 vibrate: swNotifySound ? [300, 100, 300] : [],
@@ -167,6 +247,12 @@ self.addEventListener('periodicsync', (event) => {
     }
 });
 
-// Fallback interval check while worker is alive
-setInterval(checkBackgroundSchedule, 30000);
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'timetable-sync') {
+        event.waitUntil(checkBackgroundSchedule());
+    }
+});
+
+// Fallback interval check while worker is alive in background
+setInterval(checkBackgroundSchedule, 25000);
 
