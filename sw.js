@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timetable-v18.3';
+const CACHE_NAME = 'timetable-v18.4';
 const ASSETS = [
     './',
     './index.html',
@@ -6,8 +6,7 @@ const ASSETS = [
     './script.js',
     './favicon.svg',
     './icon-maskable.svg',
-    './icon-192.png',
-    './icon-512.png',
+    './icon-any.svg',
     './manifest.json',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'
 ];
