@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timetable-v18.2';
+const CACHE_NAME = 'timetable-v18.3';
 const ASSETS = [
     './',
     './index.html',
@@ -203,7 +203,11 @@ async function checkBackgroundSchedule() {
 
     const now = new Date();
     const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const currentTimeMins = now.getHours() * 60 + now.getMinutes();
+    const currentHour = now.getHours();
+    const currentTimeMins = currentHour * 60 + now.getMinutes();
+
+    // Active operational window: 7:00 AM (420 mins) to 6:00 PM (1080 mins)
+    if (currentTimeMins < 420 || currentTimeMins > 1080) return;
 
     const todayData = swTimetable.find(d => d.day === currentDay);
     if (!todayData || !todayData.classes) return;
