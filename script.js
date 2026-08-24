@@ -329,6 +329,17 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(reg => {
                 console.log('Service Worker Registered');
                 
+                // Explicitly check for updates whenever the device connects to the internet
+                const checkForAppUpdates = () => {
+                    if (navigator.onLine) {
+                        reg.update().catch(err => console.log('SW Update Check error:', err));
+                    }
+                };
+
+                // Check on initial load and when internet connection is restored
+                checkForAppUpdates();
+                window.addEventListener('online', checkForAppUpdates);
+                
                 // Request Periodic Sync if available
                 if ('periodicSync' in reg) {
                     reg.periodicSync.register('check-timetable-schedule', {
@@ -351,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     installingWorker.onstatechange = () => {
                         if (installingWorker.state === 'installed') {
                             if (navigator.serviceWorker.controller) {
-                                console.log('New update available. Reloading page...');
+                                console.log('New version detected! Updating code in local system storage...');
                                 window.location.reload();
                             }
                         }
