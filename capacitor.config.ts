@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.prakhar.college.timetable',
-  appName: 'Prakhar Timetable',
+  appName: 'Timetable',
   webDir: 'dist'
 };
 

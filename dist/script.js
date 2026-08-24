@@ -986,7 +986,30 @@ function initNotifications() {
 
     // Enable Notifications Button
     if (enableBtn) {
-        enableBtn.addEventListener('click', () => {
+        enableBtn.addEventListener('click', async () => {
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+                try {
+                    const result = await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+                    if (result.display === 'granted') {
+                        notificationsEnabled = true;
+                        localStorage.setItem('notificationsEnabled', 'true');
+                        updateNotificationsUI(true);
+                        
+                        await window.Capacitor.Plugins.LocalNotifications.schedule({
+                            notifications: [{
+                                title: 'Class Alerts Active! 🎉',
+                                body: `You will get class notifications ${notifyOffset}m before start time.`,
+                                id: 1,
+                                schedule: { at: new Date(Date.now() + 1000) }
+                            }]
+                        });
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Capacitor LocalNotifications permission error:', e);
+                }
+            }
+
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
                     notificationsEnabled = true;
@@ -1138,6 +1161,22 @@ function sendMilestoneNotification(classData, mins) {
 }
 
 function showAppNotification(title, options) {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+        try {
+            window.Capacitor.Plugins.LocalNotifications.schedule({
+                notifications: [{
+                    title: title,
+                    body: options && options.body ? options.body : '',
+                    id: Math.floor(Math.random() * 100000),
+                    schedule: { at: new Date(Date.now() + 500) }
+                }]
+            });
+            return;
+        } catch (err) {
+            console.warn('Capacitor LocalNotifications trigger error:', err);
+        }
+    }
+
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
     const notifOptions = Object.assign({
