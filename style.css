@@ -657,18 +657,21 @@ body::after {
     }
 
     .student-details {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--text-secondary);
         display: block;
-        opacity: 0.8;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        opacity: 0.95;
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.4;
     }
 
     .semester-info {
-        display: none;
-        /* Hide less important info */
+        display: block;
+        font-size: 11px;
+        color: var(--accent-primary);
+        font-weight: 600;
+        margin-top: 2px;
     }
 
 

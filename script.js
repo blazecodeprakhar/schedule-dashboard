@@ -658,7 +658,9 @@ function displayCurrentClass(classData, nextClassData) {
 
     className.textContent = classData.name;
     classTime.innerHTML = `${classData.time}`;
+    classLocation.style.display = 'flex';
     classLocation.textContent = classData.location;
+    classInstructor.style.display = 'flex';
     classInstructor.textContent = `${classData.instructor} • ${classData.type}`;
 
     timerSection.style.display = 'block';
@@ -692,7 +694,9 @@ function displayUpcomingClass(classData) {
     className.textContent = classData.name;
     const [startTimeStr] = classData.time.split('-');
     classTime.textContent = `Starts at ${startTimeStr}`;
+    classLocation.style.display = 'flex';
     classLocation.textContent = classData.location;
+    classInstructor.style.display = 'flex';
     classInstructor.textContent = `${classData.instructor} • ${classData.type}`;
 
     timerSection.style.display = 'block';
@@ -717,9 +721,9 @@ function displayEndOfDay() {
     statusText.textContent = 'Completed';
 
     className.textContent = 'All Classes Completed';
-    classTime.textContent = 'Enjoy your rest of the day! 🎉';
-    classLocation.textContent = '-';
-    classInstructor.textContent = '-';
+    classTime.innerHTML = 'Enjoy your rest of the day! 🎉';
+    classLocation.style.display = 'none';
+    classInstructor.style.display = 'none';
 
     if (timerSection) timerSection.style.display = 'none';
     const nextPreview = document.getElementById('nextClassPreview');
@@ -742,9 +746,9 @@ function displayNoScheduleToday() {
     statusText.textContent = 'Rest Day';
 
     className.textContent = 'No Classes Today';
-    classTime.textContent = 'Enjoy your day! 😴';
-    classLocation.textContent = '-';
-    classInstructor.textContent = '-';
+    classTime.innerHTML = 'Enjoy your day! 😴';
+    classLocation.style.display = 'none';
+    classInstructor.style.display = 'none';
 
     if (timerSection) timerSection.style.display = 'none';
     const nextPreview = document.getElementById('nextClassPreview');
